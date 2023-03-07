@@ -1,16 +1,6 @@
 <html>
     <head>
-        <style>
-            body {
-                margin-top: 25px;
-                margin-left: auto;
-                margin-right: auto;
-                max-width: 40em;
-            }
-            form {
-                text-align: center;
-            }
-        </style>
+        <link rel="stylesheet" href="../web/styles.css">
     </head>
     <body>
         <h1> Load Databases </h1>
