@@ -76,4 +76,50 @@
         }
         printf("</table>\n");
     }
+
+    /**
+     * Performs an mysql operation to reload all the database information
+     * from the specified file (which must contain the output of an mysqldump).
+     * Assumes that the dump was performed with the "--databases" option, so that
+     * the file contains CREATE statements and ERASE statements as necessary.
+     * 
+     * @param string $mysql_path the path to the binary executable of mysql (mine is
+     *                          /Applications/MAMP/Library/bin/mysql)
+     * @param string $filename the name of the file with the mysqldump information
+     */
+    function reloadFromDump(string $mysql_path, string $filename = 'db_dump.sql') {
+        $servername = "localhost";
+        $username = "root";
+        $password = "root";
+        $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";    
+        printf("<p>Command executed: \n".$command."</p>");
+        $output = null;
+        $retval = null;
+        exec($command, $output, $retval);
+        echo "Returned with status $retval and output:\n";
+        print_r($output);
+    }
+
+    /**
+     * Performs a mysqldump off the inputted databases to the specified file.
+     * 
+     * @param array $databases the names of the databases to be dumped
+     * @param string $mysqldump_path the path to the binary executable of mysqldump; 
+     *                               mine is /Applications/MAMP/Library/bin/mysqldump
+     * @param string $filename the name of the file to be created (or overwritten)
+     *                         during the dump.
+     */
+    function getDumpFile(array $databases, string $mysqldump_path, string $filename = 'db_dump.sql') {
+        $servername = "localhost";
+        $username = "root";
+        $password = "root";
+        $db_string = implode(" ", $databases);
+        $command = "$mysqldump_path --host='localhost' --user='root' --password='root' --databases $db_string > $filename";    
+        printf("<p>Command executed: \n".$command."</p>");
+        $output = null;
+        $retval = null;
+        exec($command, $output, $retval);
+        echo "Returned with status $retval and output:\n";
+        print_r($output);
+    }
 ?>
