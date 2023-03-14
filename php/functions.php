@@ -1,20 +1,19 @@
 <?php 
     /**
-     * This file hosts a collections of commonly used functions. It should not be
-     * called directly, but can be invoked by writing "include 'functions.php'"
+     * This file hosts a collections of commonly used functions. It should not be called directly, but can be invoked by writing "include 'functions.php'"
      */
 
     /**
-     * Connects to the MySQL server using the username "root" with the 
-     * same password. The programmer must close the connection after use.
+     * Connects to the MySQL server using the username "root" with the same password. The programmer must close the connection after use.
      * 
      * @param string $servername = "localhost" Name of the server
      * @param string $username = "root" Username of database user
      * @param string $password = "root" Password of database user
+     * @param string $to_print = true Prints to the screen if successfully connected.
      *  
      * @return mysqli::construct The connection to the database 
      */
-    function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root") {       
+    function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true) {       
         // Create connection
         $conn = new mysqli($servername, $username, $password);
         
@@ -22,14 +21,15 @@
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
-        echo "Connected successfully";
+        if ($to_print) {
+            echo "Connected successfully";
+        }
         
         return $conn;
     }
 
     /**
-     * Prints a table that has been accessed using a set formatting style. 
-     * Must be included inside an html block.
+     * Prints a table that has been accessed using a set formatting style. Must be included inside an html block.
      * 
      * @param array $data a 2D array that defines the table to draw the
      *                    information from. See the example for how to generate.
@@ -78,10 +78,7 @@
     }
 
     /**
-     * Performs an mysql operation to reload all the database information
-     * from the specified file (which must contain the output of an mysqldump).
-     * Assumes that the dump was performed with the "--databases" option, so that
-     * the file contains CREATE statements and ERASE statements as necessary.
+     * Performs an mysql operation to reload all the database information from the specified file (which must contain the output of an mysqldump). Assumes that the dump was performed with the "--databases" option, so that the file contains CREATE statements and ERASE statements as necessary.
      * 
      * @param string $mysql_path the path to the binary executable of mysql (mine is
      *                          /Applications/MAMP/Library/bin/mysql)
