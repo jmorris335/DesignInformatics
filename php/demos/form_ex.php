@@ -14,6 +14,7 @@
             <input type="text" id="fname" name="fname"><br>
             <br>
             <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
         </form> 
 
         <?php
