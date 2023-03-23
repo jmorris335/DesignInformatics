@@ -212,13 +212,13 @@ function makeChamber(Printer &$printer, array $vendors) {
         }
     }
     $conn->query(makeInsertQuery($table_name, $ent_array[0]->getNonKeyColumns(), $insert_ent));
-    setIDs($ent_array, $table_name, $conn);
+    setPK($ent_array, $table_name, $conn);
  }
 
   /**
-  * Queries the database for the ID (primary key) of each entity and sets it using the setID method. Must be called directly after inserting the entity array.
+  * Queries the database for the primary key of each entity and sets it using the setID method. Must be called directly after inserting the entity array.
   */
-  function setIDs(array $ent_array, string $table_name, mysqli $conn) {
+  function setPK(array $ent_array, string $table_name, mysqli $conn) {
     $result = $conn->query("SELECT last_insert_id();"); // Get recently inserted pk
     $curr_pk = $result->fetch_all(MYSQLI_NUM)[0][0]; // Grab value
     foreach ($ent_array as $ent) {

@@ -1,8 +1,14 @@
 <html>
     <head>
-        <link rel="stylesheet" href="../web/styles.css">
+        <link rel="stylesheet" href="../web/css/styles.css">
     </head>
     <body>
+        <div class="topnav">
+            <a href="http://localhost:8888/DesignInformatics/php/main.php">Main Overview</a>
+            <a class="active" href="http://localhost:8888/DesignInformatics/db/">Sync DBs</a>
+            <a href="http://localhost:8888/phpMyAdmin5/index.php">phpMyAdmin</a>
+            <a href="http://localhost:8888/DesignInformatics/php/demos">Class Demos</a>
+        </div>
         <h1> Load Databases </h1>
         <p> Click "Backup Databases" after making a change to any given database, then sync your changes using Git. You can also select "Reload Database" to load the latest changes (if they've been previously backed up and synced to GitHub). </p>
         <form method="post">

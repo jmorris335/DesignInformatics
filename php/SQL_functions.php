@@ -39,6 +39,7 @@ function makeInsertQuery(string $table_name, array $col_set, array $values_set) 
             $values_str = $values_str.",";
         }
     }
+    
     $query = "INSERT INTO 3DPrinterDT.$table_name ($col_str) VALUES $values_str;";
     return $query;
 }
@@ -72,30 +73,30 @@ function makeUpdateQuery(string $table_name, array $set_columns, array $set_valu
 }
 
 /**
-   * Obtains the name of the primary key of the table. In the case of multiple primary keys, it only returns the initial key name.
-   * 
-   * @param string $table_name The name of the table in the database
-   * @param mysqli $conn Connection to the server
-   * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
-   * @return string The name of the first primary key for the table
-   */
-  function getPK(string $table_name, mysqli $conn, string $database_name= "3DPrinterDT") {
+ * Obtains the name of the primary key of the table. In the case of multiple primary keys, it only returns the initial key name.
+ * 
+ * @param string $table_name The name of the table in the database
+ * @param mysqli $conn Connection to the server
+ * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
+ * @return string The name of the first primary key for the table
+ */
+function getPK(string $table_name, mysqli $conn, string $database_name= "3DPrinterDT") {
     $query = "SHOW INDEX FROM $database_name.$table_name WHERE Key_name = 'PRIMARY';";
     $results = $conn->query($query);
     $rows = $results->fetch_all(MYSQLI_BOTH);
     $key_name = $rows[0]["Column_name"];
     return $key_name;
-  }
+}
 
-   /**
-   * Returns the name of each columns in the table.
-   * 
-   * @param string $table_name The name of the table in the database
-   * @param mysqli $conn Connection to the server
-   * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
-   * @return array An ordered array of strings, where each item is a column label
-   */
-  function getColumnLabels(string $table_name, mysqli $conn, string $database_name= "3DPrinterDT") {
+/**
+ * Returns the name of each columns in the table.
+ * 
+ * @param string $table_name The name of the table in the database
+ * @param mysqli $conn Connection to the server
+ * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
+ * @return array An ordered array of strings, where each item is a column label
+ */
+function getColumnLabels(string $table_name, mysqli $conn, string $database_name= "3DPrinterDT") {
     $col_labels = array();
     $query = "SHOW COLUMNS FROM $database_name.$table_name;";
     $results = $conn->query($query);
@@ -104,5 +105,51 @@ function makeUpdateQuery(string $table_name, array $set_columns, array $set_valu
         array_push($col_labels, $row["Field"]);
     }
     return $col_labels;
-  }
+}
+
+/**
+ * Returns an array representing the inputted table
+ * 
+ * @param string $table_name The name of the table in the database to select
+ * @param mysqli $conn Connection to the server
+ * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
+ * @return array An 2D array, where each item represents a row in the table, and each field is called by the column names
+ * 
+ * @example
+ *  $table = getTable("Printer", $conn);
+ *  $first_pk = $table[0]["printer_ID"];
+ *  printTables($table, array("printer_ID", "location"));
+ */
+function getTable(string $table_name, mysqli $conn, string $database_name= "3DPrinterDT") {
+    $query = "SELECT * FROM $database_name.$table_name;";
+    $results = $conn->query($query);
+    return $results->fetch_all(MYSQLI_BOTH);
+}
+
+function getPrinterStatus(int $printer_id, $conn) {
+    $query = "SELECT is_connected, is_busy, is_available, needs_service, has_error
+        FROM 3DPrinterDT.Printer_State
+        WHERE timestamp = (
+            SELECT max(timestamp)
+            FROM 3DPrinterDT.Printer_State
+            WHERE printer_ID = $printer_id);";
+    $results = $conn->query($query);
+    $rows = $results->fetch_all(MYSQLI_BOTH);
+    $row = $rows[0];
+    if (!$row["is_connected"]) {
+        return "NOT CONNECTED";
+    }
+    else if ($row["is_available"]) {
+        return "AVAILABLE";
+    }
+    else if ($row["is_busy"]) {
+        return "BUSY";
+    }
+    else if ($row["needs_service"]) {
+        return "NEEDS SERVICE";
+    }
+    else {
+        return "ERROR";
+    }
+}
 ?>
