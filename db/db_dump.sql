@@ -153,39 +153,6 @@ INSERT INTO `Person_Takes_Course` VALUES (1,1,1),(2,1,2),(3,2,2),(4,2,4),(5,4,1)
 UNLOCK TABLES;
 
 --
--- Current Database: `class_scratchpaper`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `class_scratchpaper` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `class_scratchpaper`;
-
---
--- Table structure for table `Books`
---
-
-DROP TABLE IF EXISTS `Books`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Books` (
-  `Title` varchar(100) NOT NULL,
-  `Author` varchar(100) DEFAULT NULL,
-  `Pages` int(11) DEFAULT NULL,
-  `Publish_Date` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Books`
---
-
-LOCK TABLES `Books` WRITE;
-/*!40000 ALTER TABLE `Books` DISABLE KEYS */;
-INSERT INTO `Books` VALUES ('Harry Potter','JK Rowling',500,'2023-03-01'),('Harry Potter','JK Rowling',500,'2023-03-01');
-/*!40000 ALTER TABLE `Books` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Current Database: `3DPrinterDT`
 --
 
@@ -194,56 +161,57 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `3DPrinterDT` /*!40100 DEFAULT CHARACTE
 USE `3DPrinterDT`;
 
 --
--- Table structure for table `Employees`
+-- Table structure for table `Employee`
 --
 
-DROP TABLE IF EXISTS `Employees`;
+DROP TABLE IF EXISTS `Employee`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Employees` (
+CREATE TABLE `Employee` (
   `employee_ID` int(11) NOT NULL AUTO_INCREMENT,
   `first_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
   `start_date` datetime DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
   PRIMARY KEY (`employee_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Employees`
+-- Dumping data for table `Employee`
 --
 
-LOCK TABLES `Employees` WRITE;
-/*!40000 ALTER TABLE `Employees` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Employees` ENABLE KEYS */;
+LOCK TABLES `Employee` WRITE;
+/*!40000 ALTER TABLE `Employee` DISABLE KEYS */;
+INSERT INTO `Employee` VALUES (1,'Carl','Smith','2016-09-14 00:00:00',NULL),(2,'Ishaan','Khare','2020-05-24 00:00:00',NULL),(3,'Ishaan','Shahane','2013-12-04 00:00:00',NULL),(4,'Bob','Smith','2014-12-17 00:00:00',NULL),(5,'Bob','Gonzalez','2017-06-13 00:00:00',NULL),(6,'Ishaan','Fischer','2018-05-04 00:00:00',NULL);
+/*!40000 ALTER TABLE `Employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `Employees_has_Role`
+-- Table structure for table `Employee_Has_Role`
 --
 
-DROP TABLE IF EXISTS `Employees_has_Role`;
+DROP TABLE IF EXISTS `Employee_Has_Role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Employees_has_Role` (
+CREATE TABLE `Employee_Has_Role` (
   `employe_ID` int(11) NOT NULL,
   `role_ID` int(11) NOT NULL,
   PRIMARY KEY (`employe_ID`,`role_ID`),
   KEY `fk_Employees_has_Role_Role1_idx` (`role_ID`),
   KEY `fk_Employees_has_Role_Employees1_idx` (`employe_ID`),
-  CONSTRAINT `fk_Employees_has_Role_Employees1` FOREIGN KEY (`employe_ID`) REFERENCES `Employees` (`employee_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Employees_has_Role_Employees1` FOREIGN KEY (`employe_ID`) REFERENCES `Employee` (`employee_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Employees_has_Role_Role1` FOREIGN KEY (`role_ID`) REFERENCES `Role` (`role_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Employees_has_Role`
+-- Dumping data for table `Employee_Has_Role`
 --
 
-LOCK TABLES `Employees_has_Role` WRITE;
-/*!40000 ALTER TABLE `Employees_has_Role` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Employees_has_Role` ENABLE KEYS */;
+LOCK TABLES `Employee_Has_Role` WRITE;
+/*!40000 ALTER TABLE `Employee_Has_Role` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Employee_Has_Role` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -257,7 +225,7 @@ CREATE TABLE `Job_Parameter` (
   `jobparam_ID` int(11) NOT NULL AUTO_INCREMENT,
   `jobparam_Name` varchar(45) DEFAULT NULL,
   `value` decimal(5,0) DEFAULT NULL,
-  `unit` varchar(4) DEFAULT NULL,
+  `unit` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`jobparam_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -285,7 +253,7 @@ CREATE TABLE `Maintenance_Log` (
   `notes` blob,
   PRIMARY KEY (`mlog_ID`),
   KEY `fk_Maintenance_Log_Employees1_idx` (`employee_ID`),
-  CONSTRAINT `fk_Maintenance_Log_Employees1` FOREIGN KEY (`employee_ID`) REFERENCES `Employees` (`employee_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_Maintenance_Log_Employees1` FOREIGN KEY (`employee_ID`) REFERENCES `Employee` (`employee_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -307,14 +275,14 @@ DROP TABLE IF EXISTS `Material`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Material` (
   `mat_ID` int(11) NOT NULL AUTO_INCREMENT,
-  `melt_temp` decimal(2,0) DEFAULT NULL,
+  `melt_temp` decimal(4,0) DEFAULT NULL,
   `mat_name` varchar(45) DEFAULT NULL,
   `color` varchar(15) DEFAULT NULL,
-  `vendor_ID` int(11) NOT NULL,
+  `vendor_ID` int(11) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`mat_ID`),
   KEY `fk_Material_Vendor1_idx` (`vendor_ID`),
   CONSTRAINT `fk_Material_Vendor1` FOREIGN KEY (`vendor_ID`) REFERENCES `Vendor` (`vendor_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,6 +291,7 @@ CREATE TABLE `Material` (
 
 LOCK TABLES `Material` WRITE;
 /*!40000 ALTER TABLE `Material` DISABLE KEYS */;
+INSERT INTO `Material` VALUES (1,126,'Nylon 12 Carbon Fiber','Black',4),(2,130,'ULTEM™ 1010 resin','Amber',4),(3,119,'ABS-M30','White',4),(4,126,'ABS-M30','Blue',4),(5,126,'ABS-M30','Grey',4),(6,126,'Polycarbonate','Clear',4);
 /*!40000 ALTER TABLE `Material` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -356,28 +325,28 @@ LOCK TABLES `Material_Loaded_In_Printer` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `Parameters`
+-- Table structure for table `Parameter`
 --
 
-DROP TABLE IF EXISTS `Parameters`;
+DROP TABLE IF EXISTS `Parameter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Parameters` (
-  `param_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `Parameter` (
+  `param_ID` int(11) NOT NULL AUTO_INCREMENT,
   `param_name` varchar(60) NOT NULL,
-  `value` decimal(4,0) DEFAULT NULL,
-  `unit` varchar(3) DEFAULT NULL,
-  PRIMARY KEY (`param_id`)
+  `value` decimal(10,0) DEFAULT NULL,
+  `unit` varchar(8) DEFAULT NULL,
+  PRIMARY KEY (`param_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Parameters`
+-- Dumping data for table `Parameter`
 --
 
-LOCK TABLES `Parameters` WRITE;
-/*!40000 ALTER TABLE `Parameters` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Parameters` ENABLE KEYS */;
+LOCK TABLES `Parameter` WRITE;
+/*!40000 ALTER TABLE `Parameter` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Parameter` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -388,13 +357,16 @@ DROP TABLE IF EXISTS `Part`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Part` (
-  `part_id` int(11) NOT NULL AUTO_INCREMENT,
+  `part_ID` int(11) NOT NULL AUTO_INCREMENT,
   `part_name` varchar(60) DEFAULT NULL,
-  `vendor_ID` int(11) NOT NULL,
-  PRIMARY KEY (`part_id`),
+  `vendor_ID` int(11) NOT NULL DEFAULT '-1',
+  `printer_ID` int(11) NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`part_ID`),
   KEY `fk_Part_Vendor_idx` (`vendor_ID`),
+  KEY `fk_Part_Printer1_idx` (`printer_ID`),
+  CONSTRAINT `fk_Part_Printer1` FOREIGN KEY (`printer_ID`) REFERENCES `Printer` (`printer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Part_Vendor` FOREIGN KEY (`vendor_ID`) REFERENCES `Vendor` (`vendor_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -403,7 +375,35 @@ CREATE TABLE `Part` (
 
 LOCK TABLES `Part` WRITE;
 /*!40000 ALTER TABLE `Part` DISABLE KEYS */;
+INSERT INTO `Part` VALUES (1,'bed',5,2),(2,'x_motor',1,2),(3,'y_motor',1,2),(4,'bed_motor',1,2),(5,'feed_motor',1,2),(6,'chamber',5,2);
 /*!40000 ALTER TABLE `Part` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Part_Has_Maintenance_Log`
+--
+
+DROP TABLE IF EXISTS `Part_Has_Maintenance_Log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Part_Has_Maintenance_Log` (
+  `part_ID` int(11) NOT NULL,
+  `mlog_ID` int(11) NOT NULL,
+  PRIMARY KEY (`part_ID`,`mlog_ID`),
+  KEY `fk_Part_has_Maintenance_Log_Maintenance_Log1_idx` (`mlog_ID`),
+  KEY `fk_Part_has_Maintenance_Log_Part1_idx` (`part_ID`),
+  CONSTRAINT `fk_Part_has_Maintenance_Log_Maintenance_Log1` FOREIGN KEY (`mlog_ID`) REFERENCES `Maintenance_Log` (`mlog_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Part_has_Maintenance_Log_Part1` FOREIGN KEY (`part_ID`) REFERENCES `Part` (`part_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Part_Has_Maintenance_Log`
+--
+
+LOCK TABLES `Part_Has_Maintenance_Log` WRITE;
+/*!40000 ALTER TABLE `Part_Has_Maintenance_Log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Part_Has_Maintenance_Log` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -414,13 +414,13 @@ DROP TABLE IF EXISTS `Part_Parameters`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Part_Parameters` (
-  `param_id` int(11) NOT NULL,
-  `part_id` int(11) NOT NULL,
-  PRIMARY KEY (`param_id`,`part_id`),
-  KEY `fk_Part_Parameters_has_Part_Part1_idx` (`part_id`),
-  KEY `fk_Part_Parameters_has_Part_Part_Parameters1_idx` (`param_id`),
-  CONSTRAINT `fk_Part_Parameters_has_Part_Part1` FOREIGN KEY (`part_id`) REFERENCES `Part` (`part_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Part_Parameters_has_Part_Part_Parameters1` FOREIGN KEY (`param_id`) REFERENCES `Parameters` (`param_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  `param_ID` int(11) NOT NULL,
+  `part_ID` int(11) NOT NULL,
+  PRIMARY KEY (`param_ID`,`part_ID`),
+  KEY `fk_Part_Parameters_has_Part_Part1_idx` (`part_ID`),
+  KEY `fk_Part_Parameters_has_Part_Part_Parameters1_idx` (`param_ID`),
+  CONSTRAINT `fk_Part_Parameters_has_Part_Part1` FOREIGN KEY (`part_ID`) REFERENCES `Part` (`part_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Part_Parameters_has_Part_Part_Parameters1` FOREIGN KEY (`param_ID`) REFERENCES `Parameter` (`param_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -434,33 +434,6 @@ LOCK TABLES `Part_Parameters` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `Part_has_Maintenance_Log`
---
-
-DROP TABLE IF EXISTS `Part_has_Maintenance_Log`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Part_has_Maintenance_Log` (
-  `part_ID` int(11) NOT NULL,
-  `mlog_ID` int(11) NOT NULL,
-  PRIMARY KEY (`part_ID`,`mlog_ID`),
-  KEY `fk_Part_has_Maintenance_Log_Maintenance_Log1_idx` (`mlog_ID`),
-  KEY `fk_Part_has_Maintenance_Log_Part1_idx` (`part_ID`),
-  CONSTRAINT `fk_Part_has_Maintenance_Log_Maintenance_Log1` FOREIGN KEY (`mlog_ID`) REFERENCES `Maintenance_Log` (`mlog_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Part_has_Maintenance_Log_Part1` FOREIGN KEY (`part_ID`) REFERENCES `Part` (`part_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Part_has_Maintenance_Log`
---
-
-LOCK TABLES `Part_has_Maintenance_Log` WRITE;
-/*!40000 ALTER TABLE `Part_has_Maintenance_Log` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Part_has_Maintenance_Log` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `Print_Job`
 --
 
@@ -471,12 +444,21 @@ CREATE TABLE `Print_Job` (
   `job_ID` int(11) NOT NULL AUTO_INCREMENT,
   `model` blob,
   `code` blob,
-  `employee_ID` int(11) NOT NULL,
+  `designer_ID` int(11) NOT NULL,
   `printer_ID` int(11) NOT NULL,
+  `job_succeeded` tinyint(4) DEFAULT NULL,
+  `material_used` decimal(2,0) DEFAULT NULL,
+  `job_duration` time DEFAULT NULL,
+  `curator_ID` int(11) NOT NULL,
+  `preparer_ID` int(11) NOT NULL,
   PRIMARY KEY (`job_ID`),
-  KEY `fk_Print_Job_Employees1_idx` (`employee_ID`),
+  KEY `fk_Print_Job_Employees1_idx` (`designer_ID`),
   KEY `fk_Print_Job_Printer1_idx` (`printer_ID`),
-  CONSTRAINT `fk_Print_Job_Employees1` FOREIGN KEY (`employee_ID`) REFERENCES `Employees` (`employee_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  KEY `fk_Print_Job_Employees2_idx` (`curator_ID`),
+  KEY `fk_Print_Job_Employees3_idx` (`preparer_ID`),
+  CONSTRAINT `fk_Print_Job_Employees1` FOREIGN KEY (`designer_ID`) REFERENCES `Employee` (`employee_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Print_Job_Employees2` FOREIGN KEY (`curator_ID`) REFERENCES `Employee` (`employee_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Print_Job_Employees3` FOREIGN KEY (`preparer_ID`) REFERENCES `Employee` (`employee_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Print_Job_Printer1` FOREIGN KEY (`printer_ID`) REFERENCES `Printer` (`printer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -491,13 +473,13 @@ LOCK TABLES `Print_Job` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `Print_Job_has_Job_Parameter`
+-- Table structure for table `Print_Job_Has_Job_Parameter`
 --
 
-DROP TABLE IF EXISTS `Print_Job_has_Job_Parameter`;
+DROP TABLE IF EXISTS `Print_Job_Has_Job_Parameter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Print_Job_has_Job_Parameter` (
+CREATE TABLE `Print_Job_Has_Job_Parameter` (
   `job_ID` int(11) NOT NULL,
   `jobparam_ID` int(11) NOT NULL,
   PRIMARY KEY (`job_ID`,`jobparam_ID`),
@@ -509,12 +491,12 @@ CREATE TABLE `Print_Job_has_Job_Parameter` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Print_Job_has_Job_Parameter`
+-- Dumping data for table `Print_Job_Has_Job_Parameter`
 --
 
-LOCK TABLES `Print_Job_has_Job_Parameter` WRITE;
-/*!40000 ALTER TABLE `Print_Job_has_Job_Parameter` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Print_Job_has_Job_Parameter` ENABLE KEYS */;
+LOCK TABLES `Print_Job_Has_Job_Parameter` WRITE;
+/*!40000 ALTER TABLE `Print_Job_Has_Job_Parameter` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Print_Job_Has_Job_Parameter` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -529,8 +511,11 @@ CREATE TABLE `Printer` (
   `location` varchar(45) DEFAULT NULL,
   `IPv6` varchar(25) DEFAULT NULL,
   `model` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`printer_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `vendor_ID` int(11) NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`printer_id`),
+  KEY `fk_Printer_Vendor1_idx` (`vendor_ID`),
+  CONSTRAINT `fk_Printer_Vendor1` FOREIGN KEY (`vendor_ID`) REFERENCES `Vendor` (`vendor_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -539,6 +524,7 @@ CREATE TABLE `Printer` (
 
 LOCK TABLES `Printer` WRITE;
 /*!40000 ALTER TABLE `Printer` DISABLE KEYS */;
+INSERT INTO `Printer` VALUES (1,'Main floor','2001:db8::8a2e:370:7334','F123 Composite Ready',4),(2,'Main floor','2001:de8::8a2e:370:7334','F770 Industrial 3D Printer',4);
 /*!40000 ALTER TABLE `Printer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -609,7 +595,7 @@ CREATE TABLE `Role` (
   `role_ID` int(11) NOT NULL AUTO_INCREMENT,
   `role_name` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`role_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -618,61 +604,64 @@ CREATE TABLE `Role` (
 
 LOCK TABLES `Role` WRITE;
 /*!40000 ALTER TABLE `Role` DISABLE KEYS */;
+INSERT INTO `Role` VALUES (1,'Designer'),(2,'Manager'),(3,'Technician'),(4,'Operator');
 /*!40000 ALTER TABLE `Role` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `Subsystem`
+-- Table structure for table `Sensor`
 --
 
-DROP TABLE IF EXISTS `Subsystem`;
+DROP TABLE IF EXISTS `Sensor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Subsystem` (
-  `ss_ID` int(11) NOT NULL AUTO_INCREMENT,
-  `ss_name` varchar(20) NOT NULL,
-  `printer_ID` int(11) NOT NULL,
-  PRIMARY KEY (`ss_ID`),
-  KEY `fk_Subsystem_Printer1_idx` (`printer_ID`),
-  CONSTRAINT `fk_Subsystem_Printer1` FOREIGN KEY (`printer_ID`) REFERENCES `Printer` (`printer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `Sensor` (
+  `sensor_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `sensor_name` varchar(45) NOT NULL,
+  `part_ID` int(11) NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`sensor_ID`),
+  KEY `fk_Sensor_Part1_idx` (`part_ID`),
+  CONSTRAINT `fk_Sensor_Part1` FOREIGN KEY (`part_ID`) REFERENCES `Part` (`part_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Subsystem`
+-- Dumping data for table `Sensor`
 --
 
-LOCK TABLES `Subsystem` WRITE;
-/*!40000 ALTER TABLE `Subsystem` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Subsystem` ENABLE KEYS */;
+LOCK TABLES `Sensor` WRITE;
+/*!40000 ALTER TABLE `Sensor` DISABLE KEYS */;
+INSERT INTO `Sensor` VALUES (26,'bed_thermometer',1),(27,'bed_height_NW',1),(28,'bed_height_NE',1),(29,'bed_height_SW',1),(30,'bed_height_SE',1),(31,'bed_position_z',1),(32,'motor_ammeter',2),(33,'motor_tachometer',2),(34,'motor_thermometer',2),(35,'motor_accelerometer',2),(36,'motor_ammeter',3),(37,'motor_tachometer',3),(38,'motor_thermometer',3),(39,'motor_accelerometer',3),(40,'motor_ammeter',4),(41,'motor_tachometer',4),(42,'motor_thermometer',4),(43,'motor_accelerometer',4),(44,'motor_ammeter',5),(45,'motor_tachometer',5),(46,'motor_thermometer',5),(47,'motor_accelerometer',5),(48,'chamber_thermometer',6),(49,'chamber_oxygen_level',6),(50,'chamber_vaccuum_level',6);
+/*!40000 ALTER TABLE `Sensor` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `Subsystem_has_Part`
+-- Table structure for table `Sensor_Data`
 --
 
-DROP TABLE IF EXISTS `Subsystem_has_Part`;
+DROP TABLE IF EXISTS `Sensor_Data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Subsystem_has_Part` (
-  `ss_ID` int(11) NOT NULL,
-  `part_ID` int(11) NOT NULL,
-  `quantity` int(11) DEFAULT '1',
-  PRIMARY KEY (`ss_ID`,`part_ID`),
-  KEY `fk_Subsystem_has_Part_Part1_idx` (`part_ID`),
-  KEY `fk_Subsystem_has_Part_Subsystem1_idx` (`ss_ID`),
-  CONSTRAINT `fk_Subsystem_has_Part_Part1` FOREIGN KEY (`part_ID`) REFERENCES `Part` (`part_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Subsystem_has_Part_Subsystem1` FOREIGN KEY (`ss_ID`) REFERENCES `Subsystem` (`ss_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+CREATE TABLE `Sensor_Data` (
+  `data_ID` int(11) NOT NULL,
+  `data_name` varchar(45) DEFAULT NULL,
+  `value` decimal(10,0) NOT NULL,
+  `unit` varchar(8) DEFAULT NULL,
+  `timestamp` datetime NOT NULL,
+  `sensor_ID` int(11) NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`data_ID`),
+  KEY `fk_Sensor_Data_Sensor1_idx` (`sensor_ID`),
+  CONSTRAINT `fk_Sensor_Data_Sensor1` FOREIGN KEY (`sensor_ID`) REFERENCES `Sensor` (`sensor_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Subsystem_has_Part`
+-- Dumping data for table `Sensor_Data`
 --
 
-LOCK TABLES `Subsystem_has_Part` WRITE;
-/*!40000 ALTER TABLE `Subsystem_has_Part` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Subsystem_has_Part` ENABLE KEYS */;
+LOCK TABLES `Sensor_Data` WRITE;
+/*!40000 ALTER TABLE `Sensor_Data` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Sensor_Data` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -686,7 +675,7 @@ CREATE TABLE `Vendor` (
   `vendor_ID` int(11) NOT NULL AUTO_INCREMENT,
   `vendor_name` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`vendor_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -695,6 +684,7 @@ CREATE TABLE `Vendor` (
 
 LOCK TABLES `Vendor` WRITE;
 /*!40000 ALTER TABLE `Vendor` DISABLE KEYS */;
+INSERT INTO `Vendor` VALUES (1,'Precision Control Inc.'),(2,'Datatronics'),(3,'Blue Ridge Printers'),(4,'Stratasys'),(5,'Ace Hardware');
 /*!40000 ALTER TABLE `Vendor` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -707,4 +697,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-03-21 18:03:04
+-- Dump completed on 2023-03-22 21:32:05

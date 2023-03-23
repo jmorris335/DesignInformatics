@@ -1,21 +1,42 @@
 <?php
 class Sensor {
-    public string $name;
-    public int $printer_id;
-    public string $measured_part;
+    public int $sensor_id;
+    public string $sensor_name;
     public string $unit;
     public array $measurements;
+    public int $part_id;
+
+    private float $nominal_value;
+    private float $min_value;
+    private float $max_value;
     
-    function __construct(string $name, int $printer_id, string $measured_part, string $unit) {
-        $this->name = $name;
-        $this->printer_id = $printer_id;
-        $this->measured_part = $measured_part;
+    function __construct(string $sensor_name, string $unit, float $nominal_value, float $min_value, float $max_value) {
+        $this->sensor_name = $sensor_name;
         $this->unit = $unit;
+        $this->nominal_value = $nominal_value;
+        $this->min_value = $min_value;
+        $this->max_value = $max_value;
         $this->measurements = array();
     }
 
-    function addMeasurement(string $timestamp, float $value) {
+    function addMeasurement(DateTimeImmutable $timestamp, float $value) {
         array_unshift($this->measurements, array($timestamp, $value));
+    }
+
+    function setID(int $new_id) {
+        $this->sensor_id = $new_id;
+    }
+
+    function getID() {
+        return $this->sensor_id;
+    }
+
+    function getNonKeyColumns() {
+        return array("sensor_name", "part_ID");
+    }
+
+    function setPartID(int $new_id) {
+        $this->part_id = $new_id;
     }
 
     function getMeasurement(int $order=0) {
@@ -45,6 +66,10 @@ class Sensor {
             $seconds_between_measurement = rand() / getrandmax();
             $timestamp = $timestamp->add(new DateInterval("PT".$seconds_between_measurement."S"));
         }
+    }
+
+    function toArray() {
+        return array($this->sensor_name, $this->part_id);
     }
 }
 ?>

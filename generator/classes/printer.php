@@ -1,5 +1,7 @@
 <?php
-include "sensor.php";
+include_once "part.php";
+include_once "material.php";
+include_once "vendor.php";
 
 class Printer {
     public bool $is_busy;
@@ -11,15 +13,22 @@ class Printer {
     public int $printer_id;
     public string $location;
     public string $ip_address;
+    public string $model;
+    public Vendor $vendor;
 
-    public array $sensors;
+    public array $parts;
+    public array $materials;
+    public array $mats_can_print;
 
-    function __construct(int $printer_id, string $location, string $ip_address) {
-        $this->printer_id = $printer_id;
+    function __construct(string $location, string $ip_address, string $model, Vendor $vendor) {
         $this->location = $location;
         $this->ip_address = $ip_address;
+        $this->model = $model;
+        $this->vendor = $vendor;
         $this->setStatus("available");
-        $this->sensors = array();
+        $this->parts = array();
+        $this->materials = array();
+        $this->mats_can_print = array();
     }
 
     function getStatus() {
@@ -42,6 +51,20 @@ class Printer {
 
     function getLocation() {return $this->location;}
     function getIPAddress() {return $this->ip_address;}
+
+    function getID() {
+        return $this->printer_id;
+    }
+
+    function getNonKeyColumns() {
+        return array("location", "IPv6", "model", "vendor_ID");
+    }
+    
+    function getPart(string $part_name) {
+        foreach ($this->parts as $part) {
+            if ($part->part_name === $part_name) {return $part;}
+        }
+    }
 
     function setStatus(string $new_status) {
         $this->has_error = false;
@@ -76,8 +99,30 @@ class Printer {
         }
     }
 
-    function addSensor(Sensor $new_sensor) {
-        array_push($this->sensors, $new_sensor);
+    function setID(int $new_id) {
+        $this->printer_id = $new_id;
+    }
+
+    function addPart(Part $new_part) {
+        array_push($this->parts, $new_part);
+    }
+
+    function addMat(Material $new_mat) {
+        array_push($this->materials, $new_mat);
+    }
+
+    function addMatIDCanPrint(Material $mat_can_print) {
+        array_push($this->mats_can_print, $mat_can_print);
+    }
+
+    function updatePartIDs() {
+        foreach ($this->parts as $part) {
+            $part->printer_id = $this->printer_id;
+        }
+    }
+
+    function toArray() {
+        return array($this->location, $this->ip_address, $this->model, $this->vendor->getID());
     }
 }
 ?>
