@@ -17,6 +17,7 @@ include_once ("classes/part.php");
 include_once ("classes/vendor.php");
 include_once ("classes/material.php");
 include_once ("classes/role.php");
+include_once ("classes/printer_state.php");
 
 if(isset($_POST['commit'])) {
     makeInstances();
@@ -32,7 +33,8 @@ function makeInstances() {
     $printers = makePrinters($vendors);
     $mats = makeMaterials($vendors[3]);
     insertEntities($printers, $vendors, $employees, $mats, $roles);
-    insertNtoM($employees, $roles);
+    updatePrinters($printers, $mats);
+    insertSecondaryTables($employees, $roles, $printers);
 }
 
 /**
@@ -72,10 +74,13 @@ function makeParts(Printer &$printer, array $vendors) {
 }
 
 /**
- * Makes a generic bed part and adds typical sensors
+ * Makes a generic bed part and adds typical sensors and parameters
  */
 function makeBed(Printer &$printer, array $vendors) {
     $bed = new Part("bed", $vendors[rand(0, count($vendors)-1)]);
+    $bed->addParam(new Parameter("width", 615, "mm"));
+    $bed->addParam(new Parameter("length", 615, "mm"));
+    $bed->addParam(new Parameter("thickness", 10, "mm"));
     $bed->addSensor(new Sensor("bed_thermometer", "degF", 60, 65, 120));
     $bed->addSensor(new Sensor("bed_height_NW", "mm", 0, -5, 5));
     $bed->addSensor(new Sensor("bed_height_NE", "mm", 0, -5, 5));
@@ -90,9 +95,11 @@ function makeBed(Printer &$printer, array $vendors) {
  */
 function makeNozzle(Printer &$printer, array $vendors) {
     $nozzle = new Part("nozzle", $vendors[rand(0, count($vendors)-1)]);
+    $nozzle->addParam(new Parameter("width", .2, "mm"));
     $nozzle->addSensor(new Sensor("nozzle_thermometer", "degF", 118, 65, 150));
     $nozzle->addSensor(new Sensor("nozzle_position_x", "mm", 0, 0, 610));
     $nozzle->addSensor(new Sensor("nozzle_position_y", "mm", 0, 0, 610));
+    $printer->addPart($nozzle);
 }
 
 /**
@@ -102,6 +109,10 @@ function makeMotors(Printer &$printer, array $vendors) {
     $m_names = array("x_motor", "y_motor", "bed_motor", "feed_motor");
     foreach ($m_names as $m_name) {
         $motor = new Part($m_name, $vendors[0]);
+        $motor->addParam(new Parameter("shaft_diameter", 6.35, "mm"));
+        $motor->addParam(new Parameter("step_angle", 1.8, "deg"));
+        $motor->addParam(new Parameter("holding_torque", 470, "g"));
+        $motor->addParam(new Parameter("weight", 6.35, "mm"));
         $motor->addSensor(new Sensor("motor_ammeter", "amps", 2.8, 0, 4));
         $motor->addSensor(new Sensor("motor_tachometer", "rpm", 0, 0, 250));
         $motor->addSensor(new Sensor("motor_thermometer", "degF", 60, 75, 120));
@@ -115,6 +126,7 @@ function makeMotors(Printer &$printer, array $vendors) {
  */
 function makeChamber(Printer &$printer, array $vendors) {
     $chamber = new Part("chamber", $vendors[rand(0, count($vendors)-1)]);
+    $chamber->addParam(new Parameter("volume", 302580, "cm3"));
     $chamber->addSensor(new Sensor("chamber_thermometer", "degF", 65, 65, 120));
     $chamber->addSensor(new Sensor("chamber_oxygen_level", "percent", 21, 0.5, 25));
     $chamber->addSensor(new Sensor("chamber_vaccuum_level", "Pa", 101300, 10, 101325));
@@ -126,11 +138,11 @@ function makeChamber(Printer &$printer, array $vendors) {
  */
  function makeEmployees($roles) {
     $employees = array();
-    $first_names = array("Alice", "Bob", "Naya", "Ishaan", "Carl", "Johannes");
-    $last_names = array("Smith", "Jones", "Khare", "Shahane", "Gonzalez", "Fischer");
-    for ($i = 0; $i < 6; $i++) {
-        $f_name = $first_names[rand(0, count($first_names)-1)];
-        $l_name = $last_names[rand(0, count($last_names)-1)];
+    $first_names = array("Rhyan", "Will", "John", "Greg", "Kherissa");
+    $last_names = array("Morgan", "Hawthorne", "Morris", "Mocko", "Taylor");
+    for ($i = 0; $i < count($first_names); $i++) {
+        $f_name = $first_names[$i];
+        $l_name = $last_names[$i];
         $role = $roles[$i % count($roles)];
         $year = strval(rand(2012, 2022));
         $day = strval(rand(0, 365));
@@ -183,6 +195,7 @@ function makeChamber(Printer &$printer, array $vendors) {
         foreach($printer->parts as $part) {
             $part->updateSensorIDs();
             insertEntityHelper($part->sensors, "Sensor", $conn);
+            insertEntityHelper($part->params, "Parameter", $conn);
         }
     }
     $conn->close();
@@ -214,10 +227,32 @@ function makeChamber(Printer &$printer, array $vendors) {
     }
   }
 
+/**
+ * Adds a random number of materials that can be printed by each printer, loads these materials into the printer, and sets the status of each printer to "available"
+ */
+function updatePrinters(array $printers, array $materials) {
+    foreach ($printers as $printer) {
+        $printer->setStatus(new DateTimeImmutable());
+        $indices = range(0, count($materials) - 1);
+        shuffle($indices);
+        $num_mats = rand(1, count($materials));
+        for ($i = 0; $i < $num_mats; $i++) {
+            $mat = $materials[$indices[$i]];
+            $printer->addMatIDCanPrint($mat->getID());
+            $printer->addMat($mat->getID(),  new DateTimeImmutable(), rand(0, 1) ? 1000 : 1500);
+        }
+    }
+}
+
  /**
-  * Inserts initial values for the N to M tables in the database. Must be called after insertEntities method.
+  * Inserts initial values for the secondary tables in the database. Must be called after insertEntities method. Processes the following tables:
+  * - Employee_Has_Role
+  * - Printer_Can_Print_Material
+  * - Material_Loaded_In_Printer
+  * - Printer_Status
+  * - Part_Parameters
   */
- function insertNtoM($employees, $roles) {
+ function insertSecondaryTables($employees, $roles, $printers) {
     $conn = connectToServer(to_print: false);
 
     $rows = array();
@@ -225,8 +260,41 @@ function makeChamber(Printer &$printer, array $vendors) {
         array_push($rows, array($employee->getID(), $employee->role->getID()));
     }
     $conn->query(makeInsertQuery("Employee_Has_Role", array(), $rows));
+
+    $rows = array();
+    foreach ($printers as $printer) {
+        foreach ($printer->mats_can_print as $mat_id) {
+            array_push($rows, array($printer->getID(), $mat_id));
+        }
+    }
+    $conn->query(makeInsertQuery("Printer_Can_Print_Material", array(), $rows));
+
+    $rows = array();
+    foreach ($printers as $printer) {
+        foreach ($printer->mats_loaded as $mat) {
+            array_push($rows, $mat->toArray());
+        }
+    }
+    $conn->query(makeInsertQuery("Material_Loaded_In_Printer", array(), $rows));
+
+    $rows = array();
+    foreach ($printers as $printer) {
+        foreach ($printer->statuses as $status) {
+            array_push($rows, $status->toArray());
+        }
+    }
+    $conn->query(makeInsertQuery("Printer_State", array(), $rows));
+
+    foreach ($printers as $printer) {
+        $rows = array();
+        foreach ($printer->parts as $part) {
+            foreach ($part->params as $param) {
+                array_push($rows, array($param->getID(), $part->getID()));
+            }
+        }
+        $conn->query(makeInsertQuery("Part_Parameters", array(), $rows));
+    }
+
     $conn->close();
  }
-
- //TODO: Make secondary data: Printer status, mat_can_print, mat_in_printer
 ?>

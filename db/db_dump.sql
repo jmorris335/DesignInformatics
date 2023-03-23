@@ -174,7 +174,7 @@ CREATE TABLE `Employee` (
   `start_date` datetime DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
   PRIMARY KEY (`employee_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,7 +183,7 @@ CREATE TABLE `Employee` (
 
 LOCK TABLES `Employee` WRITE;
 /*!40000 ALTER TABLE `Employee` DISABLE KEYS */;
-INSERT INTO `Employee` VALUES (1,'Carl','Smith','2016-09-14 00:00:00',NULL),(2,'Ishaan','Khare','2020-05-24 00:00:00',NULL),(3,'Ishaan','Shahane','2013-12-04 00:00:00',NULL),(4,'Bob','Smith','2014-12-17 00:00:00',NULL),(5,'Bob','Gonzalez','2017-06-13 00:00:00',NULL),(6,'Ishaan','Fischer','2018-05-04 00:00:00',NULL);
+INSERT INTO `Employee` VALUES (1,'Rhyan','Morgan','2014-03-27 00:00:00',NULL),(2,'Will','Hawthorne','2014-09-10 00:00:00',NULL),(3,'John','Morris','2019-03-04 00:00:00',NULL),(4,'Greg','Mocko','2019-03-31 00:00:00',NULL),(5,'Kherissa','Taylor','2018-02-18 00:00:00',NULL);
 /*!40000 ALTER TABLE `Employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -211,6 +211,7 @@ CREATE TABLE `Employee_Has_Role` (
 
 LOCK TABLES `Employee_Has_Role` WRITE;
 /*!40000 ALTER TABLE `Employee_Has_Role` DISABLE KEYS */;
+INSERT INTO `Employee_Has_Role` VALUES (1,1),(5,1),(2,2),(3,3),(4,4);
 /*!40000 ALTER TABLE `Employee_Has_Role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -306,7 +307,7 @@ CREATE TABLE `Material_Loaded_In_Printer` (
   `printer_ID` int(11) NOT NULL,
   `mat_ID` int(11) NOT NULL,
   `timestamp` datetime NOT NULL,
-  `volume` decimal(2,0) NOT NULL,
+  `volume` decimal(7,0) NOT NULL,
   PRIMARY KEY (`printer_ID`,`mat_ID`,`timestamp`),
   KEY `fk_Printer_has_Material_Material2_idx` (`mat_ID`),
   KEY `fk_Printer_has_Material_Printer2_idx` (`printer_ID`),
@@ -321,6 +322,7 @@ CREATE TABLE `Material_Loaded_In_Printer` (
 
 LOCK TABLES `Material_Loaded_In_Printer` WRITE;
 /*!40000 ALTER TABLE `Material_Loaded_In_Printer` DISABLE KEYS */;
+INSERT INTO `Material_Loaded_In_Printer` VALUES (1,2,'2023-03-23 00:00:00',1000),(1,6,'2023-03-23 00:00:00',1500),(2,1,'2023-03-23 00:00:00',1000),(2,2,'2023-03-23 00:00:00',1000),(2,4,'2023-03-23 00:00:00',1000);
 /*!40000 ALTER TABLE `Material_Loaded_In_Printer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -337,7 +339,7 @@ CREATE TABLE `Parameter` (
   `value` decimal(10,0) DEFAULT NULL,
   `unit` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`param_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -346,6 +348,7 @@ CREATE TABLE `Parameter` (
 
 LOCK TABLES `Parameter` WRITE;
 /*!40000 ALTER TABLE `Parameter` DISABLE KEYS */;
+INSERT INTO `Parameter` VALUES (1,'width',615,'mm'),(2,'length',615,'mm'),(3,'thickness',10,'mm'),(4,'width',0,'mm'),(5,'shaft_diameter',6,'mm'),(6,'step_angle',2,'deg'),(7,'holding_torque',470,'g'),(8,'weight',6,'mm'),(9,'shaft_diameter',6,'mm'),(10,'step_angle',2,'deg'),(11,'holding_torque',470,'g'),(12,'weight',6,'mm'),(13,'shaft_diameter',6,'mm'),(14,'step_angle',2,'deg'),(15,'holding_torque',470,'g'),(16,'weight',6,'mm'),(17,'shaft_diameter',6,'mm'),(18,'step_angle',2,'deg'),(19,'holding_torque',470,'g'),(20,'weight',6,'mm'),(21,'volume',302580,'cm3'),(22,'width',615,'mm'),(23,'length',615,'mm'),(24,'thickness',10,'mm'),(25,'width',0,'mm'),(26,'shaft_diameter',6,'mm'),(27,'step_angle',2,'deg'),(28,'holding_torque',470,'g'),(29,'weight',6,'mm'),(30,'shaft_diameter',6,'mm'),(31,'step_angle',2,'deg'),(32,'holding_torque',470,'g'),(33,'weight',6,'mm'),(34,'shaft_diameter',6,'mm'),(35,'step_angle',2,'deg'),(36,'holding_torque',470,'g'),(37,'weight',6,'mm'),(38,'shaft_diameter',6,'mm'),(39,'step_angle',2,'deg'),(40,'holding_torque',470,'g'),(41,'weight',6,'mm'),(42,'volume',302580,'cm3');
 /*!40000 ALTER TABLE `Parameter` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -366,7 +369,7 @@ CREATE TABLE `Part` (
   KEY `fk_Part_Printer1_idx` (`printer_ID`),
   CONSTRAINT `fk_Part_Printer1` FOREIGN KEY (`printer_ID`) REFERENCES `Printer` (`printer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Part_Vendor` FOREIGN KEY (`vendor_ID`) REFERENCES `Vendor` (`vendor_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -375,7 +378,7 @@ CREATE TABLE `Part` (
 
 LOCK TABLES `Part` WRITE;
 /*!40000 ALTER TABLE `Part` DISABLE KEYS */;
-INSERT INTO `Part` VALUES (1,'bed',5,2),(2,'x_motor',1,2),(3,'y_motor',1,2),(4,'bed_motor',1,2),(5,'feed_motor',1,2),(6,'chamber',5,2);
+INSERT INTO `Part` VALUES (1,'bed',3,1),(2,'nozzle',4,1),(3,'x_motor',1,1),(4,'y_motor',1,1),(5,'bed_motor',1,1),(6,'feed_motor',1,1),(7,'chamber',4,1),(8,'bed',2,2),(9,'nozzle',2,2),(10,'x_motor',1,2),(11,'y_motor',1,2),(12,'bed_motor',1,2),(13,'feed_motor',1,2),(14,'chamber',5,2);
 /*!40000 ALTER TABLE `Part` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -430,6 +433,7 @@ CREATE TABLE `Part_Parameters` (
 
 LOCK TABLES `Part_Parameters` WRITE;
 /*!40000 ALTER TABLE `Part_Parameters` DISABLE KEYS */;
+INSERT INTO `Part_Parameters` VALUES (1,1),(2,1),(3,1),(4,2),(5,3),(6,3),(7,3),(8,3),(9,4),(10,4),(11,4),(12,4),(13,5),(14,5),(15,5),(16,5),(17,6),(18,6),(19,6),(20,6),(21,7),(22,8),(23,8),(24,8),(25,9),(26,10),(27,10),(28,10),(29,10),(30,11),(31,11),(32,11),(33,11),(34,12),(35,12),(36,12),(37,12),(38,13),(39,13),(40,13),(41,13),(42,14);
 /*!40000 ALTER TABLE `Part_Parameters` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -552,6 +556,7 @@ CREATE TABLE `Printer_Can_Print_Material` (
 
 LOCK TABLES `Printer_Can_Print_Material` WRITE;
 /*!40000 ALTER TABLE `Printer_Can_Print_Material` DISABLE KEYS */;
+INSERT INTO `Printer_Can_Print_Material` VALUES (2,1),(1,2),(2,2),(2,4),(1,6);
 /*!40000 ALTER TABLE `Printer_Can_Print_Material` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -563,13 +568,14 @@ DROP TABLE IF EXISTS `Printer_State`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Printer_State` (
-  `timestamp` datetime NOT NULL,
   `printer_id` int(11) NOT NULL,
-  `is_connected_to_net` tinyint(4) DEFAULT NULL,
-  `is_busy` tinyint(4) DEFAULT NULL,
-  `is_available` tinyint(4) DEFAULT NULL,
-  `needs_service` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`timestamp`,`printer_id`),
+  `timestamp` datetime NOT NULL,
+  `is_connected` tinyint(4) DEFAULT '1',
+  `is_busy` tinyint(4) DEFAULT '0',
+  `is_available` tinyint(4) DEFAULT '1',
+  `needs_service` tinyint(4) DEFAULT '0',
+  `has_error` tinyint(4) DEFAULT '0',
+  PRIMARY KEY (`printer_id`,`timestamp`),
   KEY `fk_Network_State_Printer1_idx` (`printer_id`),
   CONSTRAINT `fk_Network_State_Printer1` FOREIGN KEY (`printer_id`) REFERENCES `Printer` (`printer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -581,6 +587,7 @@ CREATE TABLE `Printer_State` (
 
 LOCK TABLES `Printer_State` WRITE;
 /*!40000 ALTER TABLE `Printer_State` DISABLE KEYS */;
+INSERT INTO `Printer_State` VALUES (1,'2023-03-23 00:00:00',1,0,1,0,0),(2,'2023-03-23 00:00:00',1,0,1,0,0);
 /*!40000 ALTER TABLE `Printer_State` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -622,7 +629,7 @@ CREATE TABLE `Sensor` (
   PRIMARY KEY (`sensor_ID`),
   KEY `fk_Sensor_Part1_idx` (`part_ID`),
   CONSTRAINT `fk_Sensor_Part1` FOREIGN KEY (`part_ID`) REFERENCES `Part` (`part_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -631,7 +638,7 @@ CREATE TABLE `Sensor` (
 
 LOCK TABLES `Sensor` WRITE;
 /*!40000 ALTER TABLE `Sensor` DISABLE KEYS */;
-INSERT INTO `Sensor` VALUES (26,'bed_thermometer',1),(27,'bed_height_NW',1),(28,'bed_height_NE',1),(29,'bed_height_SW',1),(30,'bed_height_SE',1),(31,'bed_position_z',1),(32,'motor_ammeter',2),(33,'motor_tachometer',2),(34,'motor_thermometer',2),(35,'motor_accelerometer',2),(36,'motor_ammeter',3),(37,'motor_tachometer',3),(38,'motor_thermometer',3),(39,'motor_accelerometer',3),(40,'motor_ammeter',4),(41,'motor_tachometer',4),(42,'motor_thermometer',4),(43,'motor_accelerometer',4),(44,'motor_ammeter',5),(45,'motor_tachometer',5),(46,'motor_thermometer',5),(47,'motor_accelerometer',5),(48,'chamber_thermometer',6),(49,'chamber_oxygen_level',6),(50,'chamber_vaccuum_level',6);
+INSERT INTO `Sensor` VALUES (1,'bed_thermometer',1),(2,'bed_height_NW',1),(3,'bed_height_NE',1),(4,'bed_height_SW',1),(5,'bed_height_SE',1),(6,'bed_position_z',1),(7,'nozzle_thermometer',2),(8,'nozzle_position_x',2),(9,'nozzle_position_y',2),(10,'motor_ammeter',3),(11,'motor_tachometer',3),(12,'motor_thermometer',3),(13,'motor_accelerometer',3),(14,'motor_ammeter',4),(15,'motor_tachometer',4),(16,'motor_thermometer',4),(17,'motor_accelerometer',4),(18,'motor_ammeter',5),(19,'motor_tachometer',5),(20,'motor_thermometer',5),(21,'motor_accelerometer',5),(22,'motor_ammeter',6),(23,'motor_tachometer',6),(24,'motor_thermometer',6),(25,'motor_accelerometer',6),(26,'chamber_thermometer',7),(27,'chamber_oxygen_level',7),(28,'chamber_vaccuum_level',7),(29,'bed_thermometer',8),(30,'bed_height_NW',8),(31,'bed_height_NE',8),(32,'bed_height_SW',8),(33,'bed_height_SE',8),(34,'bed_position_z',8),(35,'nozzle_thermometer',9),(36,'nozzle_position_x',9),(37,'nozzle_position_y',9),(38,'motor_ammeter',10),(39,'motor_tachometer',10),(40,'motor_thermometer',10),(41,'motor_accelerometer',10),(42,'motor_ammeter',11),(43,'motor_tachometer',11),(44,'motor_thermometer',11),(45,'motor_accelerometer',11),(46,'motor_ammeter',12),(47,'motor_tachometer',12),(48,'motor_thermometer',12),(49,'motor_accelerometer',12),(50,'motor_ammeter',13),(51,'motor_tachometer',13),(52,'motor_thermometer',13),(53,'motor_accelerometer',13),(54,'chamber_thermometer',14),(55,'chamber_oxygen_level',14),(56,'chamber_vaccuum_level',14);
 /*!40000 ALTER TABLE `Sensor` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -644,10 +651,10 @@ DROP TABLE IF EXISTS `Sensor_Data`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Sensor_Data` (
   `data_ID` int(11) NOT NULL,
+  `timestamp` datetime NOT NULL,
   `data_name` varchar(45) DEFAULT NULL,
   `value` decimal(10,0) NOT NULL,
   `unit` varchar(8) DEFAULT NULL,
-  `timestamp` datetime NOT NULL,
   `sensor_ID` int(11) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`data_ID`),
   KEY `fk_Sensor_Data_Sensor1_idx` (`sensor_ID`),
@@ -697,4 +704,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-03-22 21:32:05
+-- Dump completed on 2023-03-23  0:46:35

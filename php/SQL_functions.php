@@ -19,18 +19,18 @@ function makeInsertQuery(string $table_name, array $col_set, array $values_set) 
     $values_str = "";
     foreach($values_set as $row) {
         $values_str = $values_str."(";
-        foreach ($row as $value) {
-            if (is_string($value)) {
-                $values_str .= "\"$value\"";
+        for ($i = 0; $i < count($row); $i++) {
+            if (is_string($row[$i])) {
+                $values_str .= "\"$row[$i]\"";
             }
-            elseif ($value instanceof DateTimeImmutable) {
-                $date_str = $value->format("Ymd");
+            elseif ($row[$i] instanceof DateTimeImmutable) {
+                $date_str = $row[$i]->format("Ymd");
                 $values_str .= $date_str;
             }
             else {
-                $values_str .= strval($value);
+                $values_str .= strval($row[$i]);
             }
-            if ($value != $row[count($row) - 1]) {
+            if ($i != count($row) - 1) {
                 $values_str .= ",";
             }
         }

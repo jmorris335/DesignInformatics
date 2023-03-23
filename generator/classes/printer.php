@@ -2,14 +2,10 @@
 include_once "part.php";
 include_once "material.php";
 include_once "vendor.php";
+include_once "printer_state.php";
+include_once "loaded_mats.php";
 
 class Printer {
-    public bool $is_busy;
-    public bool $is_available;
-    public bool $is_connected;
-    public bool $needs_service;
-    public bool $has_error;
-
     public int $printer_id;
     public string $location;
     public string $ip_address;
@@ -17,36 +13,19 @@ class Printer {
     public Vendor $vendor;
 
     public array $parts;
-    public array $materials;
+    public array $mats_loaded;
     public array $mats_can_print;
+    public array $statuses;
 
     function __construct(string $location, string $ip_address, string $model, Vendor $vendor) {
         $this->location = $location;
         $this->ip_address = $ip_address;
         $this->model = $model;
         $this->vendor = $vendor;
-        $this->setStatus("available");
         $this->parts = array();
-        $this->materials = array();
+        $this->mats_loaded = array();
         $this->mats_can_print = array();
-    }
-
-    function getStatus() {
-        if (!$this->is_connected) {
-            return "NOT CONNECTED";
-        }
-        else if ($this->is_available) {
-            return "AVAILABLE";
-        }
-        else if ($this->is_busy) {
-            return "BUSY";
-        }
-        else if ($this->needs_service) {
-            return "NEEDS SERVICE";
-        }
-        else {
-            return "ERROR";
-        }
+        $this->statuses = array();
     }
 
     function getLocation() {return $this->location;}
@@ -66,36 +45,11 @@ class Printer {
         }
     }
 
-    function setStatus(string $new_status) {
-        $this->has_error = false;
-        $new_status = strtolower($new_status);
-        if ($new_status === "not connected") {
-            $this->is_connected = false;
-            $this->is_available = false;
-        }
+    function getStatus() {
+        $length = count($this->statuses);
+        if ($length === 0) {return null;}
         else {
-            $this->is_connected = true;
-            if($new_status === "available") {
-                $this->is_available = true;
-                $this->is_busy = false;
-                $this->needs_service = false;
-            }
-            else {
-                $this->is_available = false;
-                if($new_status === "busy") {
-                    $this->is_busy = true;
-                    $this->needs_service = false;
-                }
-                else {
-                    $this->is_busy = false;
-                    if($new_status === "needs service") {
-                        $this->needs_service = true;
-                    }
-                    else {
-                        $this->has_error = true;
-                    }
-                }
-            }
+            return $this->statuses[$length - 1];
         }
     }
 
@@ -103,16 +57,20 @@ class Printer {
         $this->printer_id = $new_id;
     }
 
+    function setStatus(DateTimeImmutable $timestamp, string $status="available") {
+        array_push($this->statuses, new PrinterState($timestamp, $this->getID(), $status));
+    }
+
     function addPart(Part $new_part) {
         array_push($this->parts, $new_part);
     }
 
-    function addMat(Material $new_mat) {
-        array_push($this->materials, $new_mat);
+    function addMat(int $mat_id,  DateTimeImmutable $timestamp, float $volume=0) {
+        array_push($this->mats_loaded, new LoadedMats($this->getID(), $mat_id, $timestamp, $volume));
     }
 
-    function addMatIDCanPrint(Material $mat_can_print) {
-        array_push($this->mats_can_print, $mat_can_print);
+    function addMatIDCanPrint(int $mat_id_can_print) {
+        array_push($this->mats_can_print, $mat_id_can_print);
     }
 
     function updatePartIDs() {

@@ -222,13 +222,14 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `3DPrinterDT`.`Printer_State` ;
 
 CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Printer_State` (
-  `timestamp` DATETIME NOT NULL,
   `printer_id` INT NOT NULL,
-  `is_connected_to_net` TINYINT NULL,
-  `is_busy` TINYINT NULL,
-  `is_available` TINYINT NULL,
-  `needs_service` TINYINT NULL,
-  PRIMARY KEY (`timestamp`, `printer_id`),
+  `timestamp` DATETIME NOT NULL,
+  `is_connected` TINYINT NULL DEFAULT 1,
+  `is_busy` TINYINT NULL DEFAULT 0,
+  `is_available` TINYINT NULL DEFAULT 1,
+  `needs_service` TINYINT NULL DEFAULT 0,
+  `has_error` TINYINT NULL DEFAULT 0,
+  PRIMARY KEY (`printer_id`, `timestamp`),
   INDEX `fk_Network_State_Printer1_idx` (`printer_id` ASC),
   CONSTRAINT `fk_Network_State_Printer1`
     FOREIGN KEY (`printer_id`)
@@ -247,7 +248,7 @@ CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Material_Loaded_In_Printer` (
   `printer_ID` INT NOT NULL,
   `mat_ID` INT NOT NULL,
   `timestamp` DATETIME NOT NULL,
-  `volume` DECIMAL(2) NOT NULL,
+  `volume` DECIMAL(7) NOT NULL,
   PRIMARY KEY (`printer_ID`, `mat_ID`, `timestamp`),
   INDEX `fk_Printer_has_Material_Material2_idx` (`mat_ID` ASC),
   INDEX `fk_Printer_has_Material_Printer2_idx` (`printer_ID` ASC),
@@ -408,10 +409,10 @@ DROP TABLE IF EXISTS `3DPrinterDT`.`Sensor_Data` ;
 
 CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Sensor_Data` (
   `data_ID` INT NOT NULL,
+  `timestamp` DATETIME NOT NULL,
   `data_name` VARCHAR(45) NULL,
   `value` DECIMAL(10) NOT NULL,
   `unit` VARCHAR(8) NULL,
-  `timestamp` DATETIME NOT NULL,
   `sensor_ID` INT NOT NULL DEFAULT -1,
   PRIMARY KEY (`data_ID`),
   INDEX `fk_Sensor_Data_Sensor1_idx` (`sensor_ID` ASC),
