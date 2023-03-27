@@ -14,14 +14,13 @@
      *  
      * @return mysqli::construct The connection to the database 
      */
-    function connectToServer(string $servername = "localhost", string $username = "root", string $password = "", bool $to_print = true, int $port = 8889) {       
+    function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
         // Create connection
         $conn = new mysqli($servername, $username, $password, null, $port);
         
         // Check connection
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
-            echo "Connection failed";
         }
         if ($to_print) {
             echo "Connected successfully";
