@@ -86,26 +86,16 @@
      * @param string $filename the name of the file with the mysqldump information
      */
     function reloadFromDump(string $mysql_path, string $filename = 'db_dump.sql') {
-        echo "one";
         $servername = "localhost";
-        echo "two";
         $username = "root";
-        echo "three";
         $password = "root";
-        echo "four";
-        $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";
-        echo "five";    
+        $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";  
         printf("<p>Command executed: \n".$command."</p>");
-        echo "six";
         $output = null;
-        echo "seven";
         $retval = null;
-        echo "eight";
         exec($command, $output, $retval);
-        echo "nine";
         echo "Returned with status $retval and output:\n";
         print_r($output);
-        echo "ten";
     }
 
     /**
