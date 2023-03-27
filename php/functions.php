@@ -10,12 +10,13 @@
      * @param string $username = "root" Username of database user
      * @param string $password = "root" Password of database user
      * @param string $to_print = true Prints to the screen if successfully connected.
+     * @param int $port = 8889 Port number
      *  
      * @return mysqli::construct The connection to the database 
      */
-    function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true) {       
+    function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
         // Create connection
-        $conn = new mysqli($servername, $username, $password);
+        $conn = new mysqli($servername, $username, $password, null, $port);
         
         // Check connection
         if ($conn->connect_error) {
@@ -88,7 +89,7 @@
         $servername = "localhost";
         $username = "root";
         $password = "root";
-        $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";    
+        $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";  
         printf("<p>Command executed: \n".$command."</p>");
         $output = null;
         $retval = null;

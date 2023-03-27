@@ -4,7 +4,12 @@
     </head>
     <body>
         <div class="topnav">
+<<<<<<< HEAD
             <a href="http://localhost:8888/DesignInformatics/">Main Overview</a>
+=======
+            <a href="http://localhost:8888/DesignInformatics/index.html">Main Page</a>
+            <a href="http://localhost:8888/DesignInformatics/php/main.php">Printer Overview</a>
+>>>>>>> 85702ce1329de44562eda45fa457a402c4971df5
             <a class="active" href="http://localhost:8888/DesignInformatics/db/">Sync DBs</a>
             <a href="http://localhost:8888/phpMyAdmin5/index.php">phpMyAdmin</a>
             <a href="http://localhost:8888/DesignInformatics/php/demos">Class Demos</a>
@@ -20,8 +25,10 @@
         </form>
         <?php
             include '../php/functions.php';
-            include 'system_info.php';
+            include '../system_info.php';
             $databases = array("Mocko_Ex", "3DPrinterDT");
+
+            printf("<p> Hello </p>");
 
             if(array_key_exists('backup', $_POST)) {
                 getDumpFile($databases, $mysqldump_path);
