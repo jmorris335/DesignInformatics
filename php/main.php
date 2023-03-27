@@ -9,7 +9,8 @@
     </head>
     <body>
         <div class="topnav">
-            <a class="active" href="http://localhost:8888/DesignInformatics/php/main.php">Main Overview</a>
+            <a href="http://localhost:8888/DesignInformatics/index.html">Main Page</a>
+            <a class="active" href="http://localhost:8888/DesignInformatics/php/main.php">Printer Overview</a>
             <a href="http://localhost:8888/DesignInformatics/db/">Sync DBs</a>
             <a href="http://localhost:8888/phpMyAdmin5/index.php">phpMyAdmin</a>
             <a href="http://localhost:8888/DesignInformatics/php/demos">Class Demos</a>
