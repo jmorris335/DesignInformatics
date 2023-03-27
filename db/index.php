@@ -24,6 +24,8 @@
             include '../system_info.php';
             $databases = array("Mocko_Ex", "3DPrinterDT");
 
+            printf("<p> Hello </p>");
+
             if(array_key_exists('backup', $_POST)) {
                 getDumpFile($databases, $mysqldump_path);
                 postResults("Backup", $databases);

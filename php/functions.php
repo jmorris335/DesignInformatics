@@ -89,7 +89,7 @@
         $servername = "localhost";
         $username = "root";
         $password = "root";
-        $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";    
+        $command = "$mysql_path --host='localhost' --user='root' --password='root' --port=8889 < $filename";    
         printf("<p>Command executed: \n".$command."</p>");
         $output = null;
         $retval = null;
