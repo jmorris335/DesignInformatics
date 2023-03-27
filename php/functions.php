@@ -89,7 +89,7 @@
         $servername = "localhost";
         $username = "root";
         $password = "root";
-        $command = "$mysql_path --host='localhost' --user='root' --password='root' --port=8889 < $filename";    
+        $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";    
         printf("<p>Command executed: \n".$command."</p>");
         $output = null;
         $retval = null;
@@ -112,7 +112,7 @@
         $username = "root";
         $password = "root";
         $db_string = implode(" ", $databases);
-        $command = "$mysqldump_path --host='localhost' --user='root' --password='root' --port = 8889 --databases $db_string > $filename";    
+        $command = "$mysqldump_path --host='localhost' --user='root' --password='root' --databases $db_string > $filename";    
         printf("<p>Command executed: \n".$command."</p>");
         $output = null;
         $retval = null;
