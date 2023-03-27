@@ -21,6 +21,7 @@
         // Check connection
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
+            echo "Connection failed";
         }
         if ($to_print) {
             echo "Connected successfully";
