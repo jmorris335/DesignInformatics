@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 -- MySQL dump 10.13  Distrib 5.7.24, for Win64 (x86_64)
+=======
+<<<<<<< HEAD
+=======
+-- MySQL dump 10.13  Distrib 5.7.34, for osx11.0 (x86_64)
+>>>>>>> 00e6ba74f06b01e2a2255ab45e24020e998fa81f
 --
 -- Host: localhost    Database: Mocko_Ex
 -- ------------------------------------------------------
@@ -704,4 +710,9 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+<<<<<<< HEAD
 -- Dump completed on 2023-03-29 13:09:25
+=======
+-- Dump completed on 2023-03-27 14:28:43
+>>>>>>> 85702ce1329de44562eda45fa457a402c4971df5
+>>>>>>> 00e6ba74f06b01e2a2255ab45e24020e998fa81f
