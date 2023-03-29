@@ -23,8 +23,8 @@
             $host = 'localhost';
             $port = 8889;
         
-        $link = mysqli_init();
-        $conn = mysqli_real_connect($link, $host, $user, $password, $db, $port);
+        $link = mysqli::init();
+        $conn = mysqli::real_connect($link, $host, $user, $password, $db, $port);
         }
         else{
         $conn = new mysqli($servername, $username, $password, null, $port);
