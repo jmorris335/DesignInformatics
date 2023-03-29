@@ -18,6 +18,7 @@
 
         <h1> Printer Interface </h1>
         <?php
+            echo phpinfo();
             include ("SQL_functions.php");
             include ("functions2.php");
 
