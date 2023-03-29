@@ -15,41 +15,28 @@
      * @return mysqli::construct The connection to the database 
      */
     function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
-        // Create connection
-        if(OSisWindows()){
-        $db_host = 'localhost';
-        $db_user = 'root';
-        $db_password = 'root';
-        $db_db = 'FDM Printer DT';
-        $db_port = 8889;
-      
-        $mysqli = new mysqli($db_host, $db_user, $db_password, $db_db);
-          
-        if ($mysqli->connect_error) {
-          echo 'Errno: '.$mysqli->connect_errno;
-          echo '<br>';
-          echo 'Error: '.$mysqli->connect_error;
-          exit();
+        // Create connection for Windows
+        if(OSisWindows()){    
+        $conn= new mysqli($servername, $username, $password, null, $port);   
+        // Check connection  
+        if ($con) {
+            echo 'connected';
+          } else {
+            echo 'not connected';
+          }
         }
-      
-        echo 'Success: A proper connection to MySQL was made.';
-        echo '<br>';
-        echo 'Host information: '.$mysqli->host_info;
-        echo '<br>';
-        echo 'Protocol version: '.$mysqli->protocol_version;
-        }
+        // Create connection for other OS
         else{
-        $mysqli = new mysqli($servername, $username, $password, null, $port);
-        }
+        $conn = new mysqli($servername, $username, $password, null, $port);
         // Check connection
-        if ($mysqli->connect_error) {
-            die("Connection failed: " . $mysqli->connect_error);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
         }
         if ($to_print) {
             echo "Connected successfully";
         }
-        
-        return $mysqli;
+        }
+        return $conn;
     }
 
     /**
