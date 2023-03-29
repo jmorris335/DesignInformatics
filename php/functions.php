@@ -17,9 +17,9 @@
     function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
         // Create connection for Windows
         if(OSisWindows()){    
-        $conn= new mysqli($servername, $username, $password, null, $port);   
+        $conn = new mysqli("localhost","root","root",null,8889);  
         // Check connection  
-        if ($con) {
+        if ($conn) {
             echo 'connected';
           } else {
             echo 'not connected';
