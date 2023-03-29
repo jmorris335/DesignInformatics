@@ -89,10 +89,10 @@
     function reloadFromDump(string $mysql_path, string $filename = 'db_dump.sql') {
         $command;
         if (OSisWindows()) {
-            $command = ".\\$mysql_path.exe --host=localhost --user=root --password=root -p 8889< $filename";
+            $command = ".\\$mysql_path.exe --host=localhost --user=root --password=root -P 8889 < $filename";
         }
         else {
-            $command = "$mysql_path --host='localhost' --user='root' --password='root' -p 8889< $filename";    
+            $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";    
         }
 
         printf("<p>Command executed: \n".$command."</p>");
@@ -120,10 +120,10 @@
         $db_string = implode(" ", $databases);
         $command;
         if (OSisWindows()) {
-            $command = ".\\$mysqldump_path.exe --host=localhost --user=root --password=root -p 8889 --databases $db_string > $filename";
+            $command = ".\\$mysqldump_path.exe --host=localhost --user=root --password=root -P 8889 --databases $db_string > $filename";
         }
         else {
-            $command = "$mysqldump_path --host='localhost' --user='root' --password='root' -p 8889 --databases $db_string > $filename"; 
+            $command = "$mysqldump_path --host='localhost' --user='root' --password='root'  --databases $db_string > $filename"; 
         }  
 
         printf("<p>Command executed: \n".$command."</p>");
