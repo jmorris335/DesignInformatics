@@ -16,15 +16,26 @@
      */
     function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
         // Create connection
-        if(OSisWindows()){
-            $user = 'root';
-            $password = 'root';
-            $db = 'inventory';
-            $host = 'localhost';
-            $port = 8889;
-        
-        $link = mysqli::init();
-        $conn = mysqli::real_connect($link, $host, $user, $password, $db, $port);
+        $db_host = 'localhost';
+        $db_user = 'root';
+        $db_password = 'root';
+        $db_db = 'FDM Printer DT';
+        $db_port = 8889;
+      
+        $mysqli = new mysqli($db_host, $db_user, $db_password, $db_db);
+          
+        if ($mysqli->connect_error) {
+          echo 'Errno: '.$mysqli->connect_errno;
+          echo '<br>';
+          echo 'Error: '.$mysqli->connect_error;
+          exit();
+        }
+      
+        echo 'Success: A proper connection to MySQL was made.';
+        echo '<br>';
+        echo 'Host information: '.$mysqli->host_info;
+        echo '<br>';
+        echo 'Protocol version: '.$mysqli->protocol_version;
         }
         else{
         $conn = new mysqli($servername, $username, $password, null, $port);
