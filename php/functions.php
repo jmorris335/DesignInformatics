@@ -16,6 +16,7 @@
      */
     function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
         // Create connection
+        if(OSisWindows()){
         $db_host = 'localhost';
         $db_user = 'root';
         $db_password = 'root';
@@ -38,17 +39,17 @@
         echo 'Protocol version: '.$mysqli->protocol_version;
         }
         else{
-        $conn = new mysqli($servername, $username, $password, null, $port);
+        $mysqli = new mysqli($servername, $username, $password, null, $port);
         }
         // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
+        if ($mysqli->connect_error) {
+            die("Connection failed: " . $mysqli->connect_error);
         }
         if ($to_print) {
             echo "Connected successfully";
         }
         
-        return $conn;
+        return $mysqli;
     }
 
     /**
