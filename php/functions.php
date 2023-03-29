@@ -17,7 +17,14 @@
     function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
         // Create connection
         if(OSisWindows()){
-            $conn = mysqli_real_connect($servername, $username, $password, null, $port);
+            $user = 'root';
+            $password = 'root';
+            $db = 'inventory';
+            $host = 'localhost';
+            $port = 8889;
+        
+        $link = mysqli_init();
+        $conn = mysqli_real_connect($link, $host, $user, $password, $db, $port);
         }
         else{
         $conn = new mysqli($servername, $username, $password, null, $port);
