@@ -86,16 +86,23 @@
      * @param string $filename the name of the file with the mysqldump information
      */
     function reloadFromDump(string $mysql_path, string $filename = 'db_dump.sql') {
-        $servername = "localhost";
-        $username = "root";
-        $password = "root";
-        $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";    
+        $command;
+        if (OSisWindows()) {
+            $command = ".\\$mysql_path.exe --host=localhost --user=root --password=root < $filename";
+        }
+        else {
+            $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";    
+        }
+
         printf("<p>Command executed: \n".$command."</p>");
         $output = null;
         $retval = null;
         exec($command, $output, $retval);
         echo "Returned with status $retval and output:\n";
-        print_r($output);
+        foreach ($output as $value) {
+            printf($value);
+            printf("<br>");
+        }
     }
 
     /**
@@ -108,16 +115,35 @@
      *                         during the dump.
      */
     function getDumpFile(array $databases, string $mysqldump_path, string $filename = 'db_dump.sql') {
-        $servername = "localhost";
-        $username = "root";
-        $password = "root";
         $db_string = implode(" ", $databases);
-        $command = "$mysqldump_path --host='localhost' --user='root' --password='root' --databases $db_string > $filename";    
+        $command;
+        if (OSisWindows()) {
+            $command = ".\\$mysqldump_path.exe --host=localhost --user=root --password=root --databases $db_string > $filename";
+        }
+        else {
+            $command = "$mysqldump_path --host='localhost' --user='root' --password='root' --databases $db_string > $filename"; 
+        }  
+
         printf("<p>Command executed: \n".$command."</p>");
         $output = null;
         $retval = null;
         exec($command, $output, $retval);
         echo "Returned with status $retval and output:\n";
-        print_r($output);
+        printf("<br>");
+        foreach ($output as $value) {
+            printf("\t$value");
+            printf("<br>");
+        }
+    }
+
+    /**
+     * Returns true if the current OS is a Windows platform, otherwise returns false
+     */
+    function OSisWindows() {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            return true;
+        } else {
+            return false;
+        }
     }
 ?>
