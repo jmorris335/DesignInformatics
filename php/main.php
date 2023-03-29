@@ -19,7 +19,7 @@
         <h1> Printer Interface </h1>
         <?php
             include ("SQL_functions.php");
-            include ("functions.php");
+            include ("functions2.php");
 
             $conn = connectToServer(to_print: false);
             $printers = getTable("Printer", $conn);
