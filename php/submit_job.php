@@ -8,21 +8,7 @@
         <link rel="stylesheet" href="../web/css/styles.css">
     </head>
     <body>
-        <div class="topnav">
-            <a href="http://localhost:8888/DesignInformatics/index.html">Main Page</a>
-            <div class="dropdown">
-                <button class=dropbtn> Printer Overview
-                    <i class="fa fa-caret-down"></i>
-                </button>
-                <div class="dropdown-content">
-                    <a href="http://localhost:8888/DesignInformatics/php/main.php">Printer Interface</a>
-                    <a href="http://localhost:8888/DesignInformatics/php/submit_job.php">Submit Job</a>
-                </div>
-            </div>
-            <a href="http://localhost:8888/DesignInformatics/db/">Sync DBs</a>
-            <a href="http://localhost:8888/phpMyAdmin5/index.php">phpMyAdmin</a>
-            <a href="http://localhost:8888/DesignInformatics/php/demos">Class Demos</a>
-        </div>
+        <?php include "../web/nav.php"; printTopNav(); ?>
 
         <h1> Submit a Print Job </h1>
 
@@ -86,6 +72,7 @@
                     <div class='col-75'>
                         <select id='printer' name='printer'>
                             <option value="" disabled selected>Select...</option>
+                            <!-- Options here come from material selection, filtered by js function "changePrinter" below-->
                         </select>
                     </div>
                 </div>
@@ -131,7 +118,6 @@
                     printer_input.innerHTML = printerOptions;
                 }
             }
-            
         </script>
 
         <p> Design Informatics, (c) 2023 </p>
