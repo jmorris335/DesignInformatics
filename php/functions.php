@@ -79,6 +79,39 @@
     }
 
     /**
+     * Prints a dropdown form from the inputted array. You can generate such an array from the getTable function in SQL_functions.php
+     * 
+     * @param array $data A 2D array where each row contains the data to be printed as a form select option, grouped by field name
+     * @param array $entry_label_names The names of the each value to add to a single select option, in order of appearance. This array commonly contains only a single value
+     * @param string $action='' The intended action for the form
+     * 
+     * @example
+     *      <html>
+     *      <?php
+     *      include 'functions.php';
+     *      $conn = connectToDB();
+     *
+     *      $query = 'SELECT * from ExampleDB.Books';
+     *      $result = $conn->query($query);
+     * 
+     *      $books = $result->fetch_all(MYSQLI_BOTH);
+     *
+     *      printf("<h2> Table Results </h2>");
+     *      $cols = array("Title", "Author");
+     *      printDropDownForm($books, $cols);
+     *      printf("<br>"); 
+     */
+    function printDropDownForm(array $data, array $entry_label_names) {
+        foreach ($data as $row) {
+            printf("<option value=$row[0]>");
+            foreach ($entry_label_names as $label) {
+                printf("$row[$label] ");
+            }
+            printf("</option>");
+        }
+    }
+
+    /**
      * Performs an mysql operation to reload all the database information from the specified file (which must contain the output of an mysqldump). Assumes that the dump was performed with the "--databases" option, so that the file contains CREATE statements and ERASE statements as necessary.
      * 
      * @param string $mysql_path the path to the binary executable of mysql (mine is
