@@ -4,6 +4,7 @@
     </head>
     <body>
         <div class="topnav">
+            <a href="http://localhost:8888/DesignInformatics/">Main Overview</a>
             <a href="http://localhost:8888/DesignInformatics/index.html">Main Page</a>
             <a href="http://localhost:8888/DesignInformatics/php/main.php">Printer Overview</a>
             <a class="active" href="http://localhost:8888/DesignInformatics/db/">Sync DBs</a>

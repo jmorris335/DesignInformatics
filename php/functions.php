@@ -15,9 +15,19 @@
      * @return mysqli::construct The connection to the database 
      */
     function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
-        // Create connection
+        // Create connection for Windows
+        if(OSisWindows()){    
+        $conn = new mysqli("localhost","root","root",null,8889);  
+        // Check connection  
+        if ($conn) {
+            echo 'connected';
+          } else {
+            echo 'not connected';
+          }
+        }
+        // Create connection for other OS
+        else{
         $conn = new mysqli($servername, $username, $password, null, $port);
-        
         // Check connection
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
@@ -25,7 +35,7 @@
         if ($to_print) {
             echo "Connected successfully";
         }
-        
+        }
         return $conn;
     }
 
@@ -119,19 +129,26 @@
      * @param string $filename the name of the file with the mysqldump information
      */
     function reloadFromDump(string $mysql_path, string $filename = 'db_dump.sql') {
-        $servername = "localhost";
-        $username = "root";
-        $password = "root";
-        $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";  
+        if (OSisWindows()) {
+            $command = ".\\$mysql_path.exe --host=localhost --user=root --password=root -P 8889 < $filename";
+        }
+        else {
+            $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";    
+        }
+
         printf("<p>Command executed: \n".$command."</p>");
         $output = null;
         $retval = null;
         exec($command, $output, $retval);
         echo "Returned with status $retval and output:\n";
-        print_r($output);
+        foreach ($output as $value) {
+            printf($value);
+            printf("<br>");
+        }
     }
 
     /**
+     * Make sure mysql and MAMP are using 8889 port
      * Performs a mysqldump off the inputted databases to the specified file.
      * 
      * @param array $databases the names of the databases to be dumped
@@ -141,16 +158,34 @@
      *                         during the dump.
      */
     function getDumpFile(array $databases, string $mysqldump_path, string $filename = 'db_dump.sql') {
-        $servername = "localhost";
-        $username = "root";
-        $password = "root";
         $db_string = implode(" ", $databases);
-        $command = "$mysqldump_path --host='localhost' --user='root' --password='root' --databases $db_string > $filename";    
+        if (OSisWindows()) {
+            $command = ".\\$mysqldump_path.exe --host=localhost --user=root --password=root -P 8889 --databases $db_string > $filename";
+        }
+        else {
+            $command = "$mysqldump_path --host='localhost' --user='root' --password='root'  --databases $db_string > $filename"; 
+        }  
+
         printf("<p>Command executed: \n".$command."</p>");
         $output = null;
         $retval = null;
         exec($command, $output, $retval);
         echo "Returned with status $retval and output:\n";
-        print_r($output);
+        printf("<br>");
+        foreach ($output as $value) {
+            printf("\t$value");
+            printf("<br>");
+        }
+    }
+
+    /**
+     * Returns true if the current OS is a Windows platform, otherwise returns false
+     */
+    function OSisWindows() {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            return true;
+        } else {
+            return false;
+        }
     }
 ?>

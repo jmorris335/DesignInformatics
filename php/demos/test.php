@@ -1,9 +1,11 @@
 <html>
-<h1> Example connection </h1>
+
 
 <?php
     include 'functions.php';
+    ?><h1> Example connection1 </h1><?php
     $conn = connectToServer();
+    ?><h1> Example connection2 </h1><?php
 
     $query = 'SELECT * from Mocko_Ex.Course';
     $result = $conn->query($query);
