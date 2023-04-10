@@ -15,9 +15,19 @@
      * @return mysqli::construct The connection to the database 
      */
     function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
-        // Create connection
+        // Create connection for Windows
+        if(OSisWindows()){    
+        $conn = new mysqli("localhost","root","root",null,8889);  
+        // Check connection  
+        if ($conn) {
+            echo 'connected';
+          } else {
+            echo 'not connected';
+          }
+        }
+        // Create connection for other OS
+        else{
         $conn = new mysqli($servername, $username, $password, null, $port);
-        
         // Check connection
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
@@ -25,7 +35,7 @@
         if ($to_print) {
             echo "Connected successfully";
         }
-        
+        }
         return $conn;
     }
 
@@ -79,7 +89,39 @@
     }
 
     /**
-     * Make sure mysql and MAMP are using 8889 port
+     * Prints a dropdown form from the inputted array. You can generate such an array from the getTable function in SQL_functions.php
+     * 
+     * @param array $data A 2D array where each row contains the data to be printed as a form select option, grouped by field name
+     * @param array $entry_label_names The names of the each value to add to a single select option, in order of appearance. This array commonly contains only a single value
+     * @param string $action='' The intended action for the form
+     * 
+     * @example
+     *      <html>
+     *      <?php
+     *      include 'functions.php';
+     *      $conn = connectToDB();
+     *
+     *      $query = 'SELECT * from ExampleDB.Books';
+     *      $result = $conn->query($query);
+     * 
+     *      $books = $result->fetch_all(MYSQLI_BOTH);
+     *
+     *      printf("<h2> Table Results </h2>");
+     *      $cols = array("Title", "Author");
+     *      printDropDownForm($books, $cols);
+     *      printf("<br>"); 
+     */
+    function printDropDownForm(array $data, array $entry_label_names) {
+        foreach ($data as $row) {
+            printf("<option value=$row[0]>");
+            foreach ($entry_label_names as $label) {
+                printf("$row[$label] ");
+            }
+            printf("</option>");
+        }
+    }
+
+    /**
      * Performs an mysql operation to reload all the database information from the specified file (which must contain the output of an mysqldump). Assumes that the dump was performed with the "--databases" option, so that the file contains CREATE statements and ERASE statements as necessary.
      * 
      * @param string $mysql_path the path to the binary executable of mysql (mine is
@@ -87,12 +129,11 @@
      * @param string $filename the name of the file with the mysqldump information
      */
     function reloadFromDump(string $mysql_path, string $filename = 'db_dump.sql') {
-        $command;
         if (OSisWindows()) {
             $command = ".\\$mysql_path.exe --host=localhost --user=root --password=root -P 8889 < $filename";
         }
         else {
-            $command = "$mysql_path --host='localhost' --user='root' --password='root' -p 8889< $filename";    
+            $command = "$mysql_path --host='localhost' --user='root' --password='root' < $filename";    
         }
 
         printf("<p>Command executed: \n".$command."</p>");
@@ -118,12 +159,15 @@
      */
     function getDumpFile(array $databases, string $mysqldump_path, string $filename = 'db_dump.sql') {
         $db_string = implode(" ", $databases);
-        $command;
         if (OSisWindows()) {
+<<<<<<< HEAD
             $command = ".\\$mysqldump_path.exe --host=localhost --user=root --password=root --databases $db_string > $filename";
+=======
+            $command = ".\\$mysqldump_path.exe --host=localhost --user=root --password=root -P 8889 --databases $db_string > $filename";
+>>>>>>> 595fc5b61974392b6ea82f3c95ec76570f8b5229
         }
         else {
-            $command = "$mysqldump_path --host='localhost' --user='root' --password='root' -p 8889 --databases $db_string > $filename"; 
+            $command = "$mysqldump_path --host='localhost' --user='root' --password='root'  --databases $db_string > $filename"; 
         }  
 
         printf("<p>Command executed: \n".$command."</p>");

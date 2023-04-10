@@ -3,14 +3,7 @@
         <link rel="stylesheet" href="../web/css/styles.css">
     </head>
     <body>
-        <div class="topnav">
-            <a href="http://localhost:8888/DesignInformatics/">Main Overview</a>
-            <a href="http://localhost:8888/DesignInformatics/index.html">Main Page</a>
-            <a href="http://localhost:8888/DesignInformatics/php/main.php">Printer Overview</a>
-            <a class="active" href="http://localhost:8888/DesignInformatics/db/">Sync DBs</a>
-            <a href="http://localhost:8888/phpMyAdmin5/index.php">phpMyAdmin</a>
-            <a href="http://localhost:8888/DesignInformatics/php/demos">Class Demos</a>
-        </div>
+        <?php include "../web/nav.php"; printTopNav("Sync DBs"); ?>
         <h1> Load Databases </h1>
         <p> Click "Backup Databases" after making a change to any given database, then sync your changes using Git. You can also select "Reload Database" to load the latest changes (if they've been previously backed up and synced to GitHub). </p>
         <form method="post">
@@ -24,8 +17,6 @@
             include '../php/functions.php';
             include '../system_info.php';
             $databases = array("Mocko_Ex", "3DPrinterDT");
-
-            printf("<p> Hello </p>");
 
             if(array_key_exists('backup', $_POST)) {
                 getDumpFile($databases, $mysqldump_path);

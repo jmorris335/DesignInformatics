@@ -152,4 +152,24 @@ function getPrinterStatus(int $printer_id, $conn) {
         return "ERROR";
     }
 }
+
+/**
+ * Gets the volumes of all the materials in the printer based on the most recent sensor data
+ * 
+ * @param int $printer_id The id of the printer to return results for
+ * @param mysqli $conn connection to the mysql server
+ */
+function getMaterialsInPrinter(int $printer_id, mysqli $conn) {
+    $conn->query("USE 3DPrinterDT;");
+    $query = "SELECT Material.mat_ID, volume, mat_name
+    FROM Material_Loaded_In_Printer
+    INNER JOIN Material
+    ON Material_Loaded_In_Printer.mat_ID = Material.mat_ID
+    WHERE Material_Loaded_In_Printer.timestamp = 
+        (SELECT MAX(Material_Loaded_In_Printer.timestamp) 
+        FROM 3DPrinterDT.Material_Loaded_In_Printer)
+    AND printer_ID = $printer_id;";
+    $result = $conn->query($query);
+    return $result->fetch_all(MYSQLI_BOTH);
+}
 ?>
