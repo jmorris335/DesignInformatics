@@ -160,11 +160,7 @@
     function getDumpFile(array $databases, string $mysqldump_path, string $filename = 'db_dump.sql') {
         $db_string = implode(" ", $databases);
         if (OSisWindows()) {
-<<<<<<< HEAD
-            $command = ".\\$mysqldump_path.exe --host=localhost --user=root --password=root --databases $db_string > $filename";
-=======
             $command = ".\\$mysqldump_path.exe --host=localhost --user=root --password=root -P 8889 --databases $db_string > $filename";
->>>>>>> 595fc5b61974392b6ea82f3c95ec76570f8b5229
         }
         else {
             $command = "$mysqldump_path --host='localhost' --user='root' --password='root'  --databases $db_string > $filename"; 
