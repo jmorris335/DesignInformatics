@@ -27,6 +27,7 @@ if(isset($_POST['commit'])) {
  * Main caller function
  */
 function makeInstances() {
+    makeUnits();
     $vendors = makeVendors();
     $roles = makeRoles();
     $employees = makeEmployees($roles);
@@ -38,12 +39,58 @@ function makeInstances() {
 }
 
 /**
+  * Makes the sets of units
+  */
+  function makeUnits() {
+    $units = array();
+    $unit_cols = array("unit_name", "unit_group", "is_main");
+    array_push($units, array("mm", "Length", 1));
+    array_push($units, array("cm", "Length", 0));
+    array_push($units, array("in", "Length", 0));
+    array_push($units, array("m", "Length", 0));
+    array_push($units, array("ft", "Length", 0));
+    array_push($units, array("cm3", "Volume", 1));
+    array_push($units, array("mm3", "Volume", 0));
+    array_push($units, array("in3", "Volume", 0));
+    array_push($units, array("mL", "Volume", 0));
+    array_push($units, array("L", "Volume", 0));
+    array_push($units, array("m3", "Volume", 0));
+    array_push($units, array("g", "Mass", 1));
+    array_push($units, array("oz", "Mass", 0));
+    array_push($units, array("kg", "Mass", 0));
+    array_push($units, array("s", "Time", 1));
+    array_push($units, array("N", "Force", 1));
+    array_push($units, array("lb", "Force", 0));
+    array_push($units, array("degF", "Temperature", 1));
+    array_push($units, array("degC", "Temperature", 0));
+    array_push($units, array("deg", "Radial", 1));
+    array_push($units, array("radians", "Radial", 0));
+    array_push($units, array("amps", "Current", 1));
+    array_push($units, array("volts", "Voltage", 1));
+    array_push($units, array("rpm", "Rotation", 1));
+    array_push($units, array("degpers", "Rotation", 0));
+    array_push($units, array("radpers", "Rotation", 0));
+    array_push($units, array("mm/s", "Velocity", 1));
+    array_push($units, array("in/s", "Velocity", 0));
+    array_push($units, array("mm/s2", "Acceleration", 1));
+    array_push($units, array("Pa", "Pressure", 1));
+    array_push($units, array("mmHg", "Pressure", 0));
+    array_push($units, array("atm", "Pressure", 0));
+    array_push($units, array("percent", "Proportion", 1));
+    $query = makeInsertQuery("Unit", $unit_cols, $units);
+
+    $conn = connectToServer(to_print: false);
+    $conn->query($query);
+    $conn->close();
+  }
+
+/**
  * Makes a set of default printers
  */
 function makePrinters(array $vendors) {
     $printers = array();
-    array_push($printers, new Printer("Main floor", "2001:db8::8a2e:370:7334", "F123 Composite Ready", $vendors[3]));
-    array_push($printers, new Printer("Main floor", "2001:de8::8a2e:370:7334", "F770 Industrial 3D Printer", $vendors[3]));
+    array_push($printers, new Printer("Main floor", "2001:db8::8a2e:370:7334", "F123 Composite Ready", "Main Composite Printer", $vendors[3]));
+    array_push($printers, new Printer("Main floor", "2001:de8::8a2e:370:7334", "F770 Industrial 3D Printer", "Big Grey Printer", $vendors[3]));
     foreach ($printers as $printer) {
         makeParts($printer, $vendors);
     }
@@ -211,7 +258,11 @@ function makeChamber(Printer &$printer, array $vendors) {
             array_push($insert_ent, $ent->toArray());
         }
     }
-    $conn->query(makeInsertQuery($table_name, $ent_array[0]->getNonKeyColumns(), $insert_ent));
+    $query = makeInsertQuery($table_name, $ent_array[0]->getNonKeyColumns(), $insert_ent);
+    // Debugging: 
+    // printf("<br>");
+    // printf("$table_name: $query");
+    $conn->query($query);
     setPK($ent_array, $table_name, $conn);
  }
 

@@ -19,14 +19,14 @@
             $conn->query("USE 3DPrinterDT;");
 
             // Get printer variables for conditional drop down values (passed to JS function)
-            $query = "SELECT Printer.printer_ID, model, mat_ID
+            $query = "SELECT Printer.printer_ID, printer_name, model, mat_ID
                 FROM Printer, Printer_State, Material_Loaded_In_Printer
                 WHERE Printer_State.printer_ID = Printer.printer_ID
                 AND Printer_State.printer_ID = Material_Loaded_In_Printer.printer_ID
                 AND Printer_State.is_available = 1;";
             $result = $conn->query($query);
             $all_printer_mats = $result->fetch_all(MYSQLI_BOTH);
-            $query = "SELECT Printer.printer_ID, model 
+            $query = "SELECT Printer.printer_ID, printer_name, model 
                 FROM Printer, Printer_State
                 WHERE Printer_State.printer_ID = Printer.printer_ID
                 AND Printer_State.is_available = 1;";
@@ -35,7 +35,7 @@
         ?>
 
         <div class='form-container'>
-            <form method='post' action=''>
+            <form method='post' action='job_param.php'>
                 <div class='row'>
                     <div class='col-25'>
                         <label for='designer'>Select the Designer</label>
@@ -58,7 +58,6 @@
                         <select id='material' name='material' onChange="changePrinter(this.value);">
                             <option value="" disabled selected>Select...</option>
                             <?php
-                                $printer_id = 1;
                                 $mats = getTable("Material", $conn);
                                 printDropDownForm($mats, array("mat_name", "color"));
                             ?>
@@ -94,9 +93,31 @@
                 </div>
                 <div class ='submit-row'>
                         <input type="submit" value="Submit">
+                        <input type="reset" value="Reset">
                 </div>
             </form>
         </div>
+
+        <?php
+            // Receive the submitted form
+            if (isset($_POST["designer"])) {
+                $designer = $_POST["designer"];
+                printf("Designer is: $designer");
+            }
+            if (isset($_POST["material"])) {
+                $mat = $_POST["material"];
+                printf("Material is: $mat");
+            }
+            if (isset($_POST["printer"])) {
+                $printer = $_POST["printer"];
+                printf("Printer is: $mat");
+            }
+
+
+            // TODO: Handle submitted form
+
+            $conn->close();
+        ?>
 
         <script>
             const printer_input = document.getElementById("printer");
@@ -110,7 +131,7 @@
                     for (i = 0; i < avl_printers.length; i++) {
                         for (j = 0; j < all_printer_mats.length; j++) {
                             if (all_printer_mats[j]["mat_ID"] === mat_id && all_printer_mats[j]["model"] === avl_printers[i]["model"]) {
-                                printerOptions += "<option value=" + all_printer_mats[j]["printer_ID"]+ ">" + all_printer_mats[j]["model"] + "</option>";
+                                printerOptions += "<option value=" + all_printer_mats[j]["printer_ID"]+ ">" + all_printer_mats[j]["printer_name"] + " (" + all_printer_mats[j]["model"] + ")" + "</option>";
                                 break; 
                             }
                             else if (j === all_printer_mats.length - 1) {

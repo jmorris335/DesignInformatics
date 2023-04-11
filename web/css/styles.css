@@ -5,6 +5,17 @@ body {
     max-width: 60em;
     font-family: Arial, Verdana, sans-serif;
 }
+button {
+    width: 100%;
+    font-weight: bold;
+    color: #522D80;
+    background-color: white;
+    padding: 12px;
+    resize: vertical;
+    border: thin solid grey;
+    border-radius: 4px;
+}
+
 /* Forms */
 form {
     text-align: left;
@@ -14,13 +25,14 @@ label {
     display: inline-block;
 }
 input[type=text], select, textarea {
-    width: 100%;
+    box-sizing: content-box;
+    width: 95%;
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 4px;
     resize: vertical;
 }
-input::file-selector-button, input[type=submit], button {
+input::file-selector-button, input[type=reset] {
     font-weight: bold;
     color: #522D80;
     background-color: white;
@@ -28,12 +40,28 @@ input::file-selector-button, input[type=submit], button {
     resize: vertical;
     border: thin solid grey;
     border-radius: 4px;
+    min-width: 8em;
+    margin-right: 1.5em;
 }
-input::file-selector-button:hover, input[type=submit]:hover, button:hover {
-    color: #F56600;
+input[type=submit] {
+    font-weight: bold;
+    color: white;
+    background-color: #522D80;
+    padding: 12px;
+    resize: vertical;
+    border: thin solid grey;
+    border-radius: 4px;
+    min-width: 8em;
+    margin-right: 1em;
+}
+input::file-selector-button:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover {
+    color: #f56600;
+    cursor: pointer;
 }
 .submit-row {
     text-align: center;
+    margin-top: 1.5em;
+    margin-bottom: .5em;
 }
 .form-container {
     border-radius: 5px;

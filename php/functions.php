@@ -188,4 +188,27 @@
             return false;
         }
     }
+
+    /**
+     * Returns true if the passed parameters are set in the POST array
+     * Based on response by animuson, https://stackoverflow.com/a/3190503/15496939
+     * 
+     * @example 
+     *  if (formIsFilled("first_question", "second_question")) {
+     *      echo("At least one passed parameter has a repsonse")
+     *  }
+     *  else {
+     *      echo("Passed parameters have no repsonses")
+     *  }
+     */
+    function formIsFilled() {
+        if (func_num_args() == 0) return false;
+        $arguments = func_get_args();
+        foreach ($arguments as $argument) {
+            if (!isset($_POST[$argument]) || !strlen($_POST[$argument])) {
+                return false;
+            }
+        }
+        return true;
+    }
 ?>
