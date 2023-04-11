@@ -32,6 +32,9 @@ input::file-selector-button, input[type=submit], button {
 input::file-selector-button:hover, input[type=submit]:hover, button:hover {
     color: #F56600;
 }
+.submit-row {
+    text-align: center;
+}
 .form-container {
     border-radius: 5px;
     background-color: #f2f2f2;

@@ -92,6 +92,9 @@
                         <input type='file' id='gcode_file' name='gcode_file'>
                     </div>
                 </div>
+                <div class ='submit-row'>
+                        <input type="submit" value="Submit">
+                </div>
             </form>
         </div>
 
