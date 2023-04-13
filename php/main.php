@@ -40,7 +40,7 @@
             printf("</table");
 
             function printPrinterCell(array $row, mysqli $conn) {
-                $id = $row["printer_id"];
+                $id = $row["printer_ID"];
                 $location = $row["location"];
                 $model = $row["model"];
                 $status = getPrinterStatus($id, $conn);
