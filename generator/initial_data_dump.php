@@ -41,7 +41,7 @@ function makeInstances() {
 /**
   * Makes the sets of units
   */
-  function makeUnits() {
+function makeUnits() {
     $units = array();
     $unit_cols = array("unit_name", "unit_group", "is_main");
     array_push($units, array("mm", "Length", 1));
@@ -82,7 +82,7 @@ function makeInstances() {
     $conn = connectToServer(to_print: false);
     $conn->query($query);
     $conn->close();
-  }
+}
 
 /**
  * Makes a set of default printers
@@ -231,52 +231,22 @@ function makeChamber(Printer &$printer, array $vendors) {
  function insertEntities($printers, $vendors, $employees, $mats, $roles) {
     $conn = connectToServer(to_print: false);
  
-    insertEntityHelper($roles, "Role", $conn);
-    insertEntityHelper($employees, "Employee", $conn);
-    insertEntityHelper($vendors, "Vendor", $conn);
-    insertEntityHelper($mats, "Material", $conn);
-    insertEntityHelper($printers, "Printer", $conn);
+    insertEntity($roles, "Role", $conn);
+    insertEntity($employees, "Employee", $conn);
+    insertEntity($vendors, "Vendor", $conn);
+    insertEntity($mats, "Material", $conn);
+    insertEntity($printers, "Printer", $conn);
     foreach($printers as $printer) {
         $printer->updatePartIDs();
-        insertEntityHelper($printer->parts, "Part", $conn);
+        insertEntity($printer->parts, "Part", $conn);
         foreach($printer->parts as $part) {
             $part->updateSensorIDs();
-            insertEntityHelper($part->sensors, "Sensor", $conn);
-            insertEntityHelper($part->params, "Parameter", $conn);
+            insertEntity($part->sensors, "Sensor", $conn);
+            insertEntity($part->params, "Parameter", $conn);
         }
     }
     $conn->close();
  }
-
- /**
-  * Composes the array for each entity to use the makeInsert method, then grabs the ID made by the MySQL server and assigns it to the entity.
-  */
- function insertEntityHelper(array $ent_array, string $table_name, mysqli $conn) {
-    $insert_ent = array();
-    foreach ($ent_array as $ent) {
-        if (method_exists($ent, "toArray")) {
-            array_push($insert_ent, $ent->toArray());
-        }
-    }
-    $query = makeInsertQuery($table_name, $ent_array[0]->getNonKeyColumns(), $insert_ent);
-    // Debugging: 
-    // printf("<br>");
-    // printf("$table_name: $query");
-    $conn->query($query);
-    setPK($ent_array, $table_name, $conn);
- }
-
-  /**
-  * Queries the database for the primary key of each entity and sets it using the setID method. Must be called directly after inserting the entity array.
-  */
-  function setPK(array $ent_array, string $table_name, mysqli $conn) {
-    $result = $conn->query("SELECT last_insert_id();"); // Get recently inserted pk
-    $curr_pk = $result->fetch_all(MYSQLI_NUM)[0][0]; // Grab value
-    foreach ($ent_array as $ent) {
-        $ent->setID($curr_pk);
-        $curr_pk++;
-    }
-  }
 
 /**
  * Adds a random number of materials that can be printed by each printer, loads these materials into the printer, and sets the status of each printer to "available"
@@ -303,7 +273,7 @@ function updatePrinters(array $printers, array $materials) {
   * - Printer_Status
   * - Part_Parameters
   */
- function insertSecondaryTables($employees, $roles, $printers) {
+function insertSecondaryTables($employees, $roles, $printers) {
     $conn = connectToServer(to_print: false);
 
     $rows = array();
@@ -347,5 +317,5 @@ function updatePrinters(array $printers, array $materials) {
     }
 
     $conn->close();
- }
+}
 ?>

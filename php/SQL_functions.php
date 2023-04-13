@@ -23,7 +23,7 @@ function makeInsertQuery(string $table_name, array $col_set, array $values_set) 
             if (is_string($row[$i])) {
                 $values_str .= "\"$row[$i]\"";
             }
-            elseif ($row[$i] instanceof DateTimeImmutable) {
+            elseif ($row[$i] instanceof DateTimeImmutable || $row[$i] instanceof DateTime ) {
                 $date_str = $row[$i]->format("Ymd");
                 $values_str .= $date_str;
             }
@@ -171,5 +171,49 @@ function getMaterialsInPrinter(int $printer_id, mysqli $conn) {
     AND printer_ID = $printer_id;";
     $result = $conn->query($query);
     return $result->fetch_all(MYSQLI_BOTH);
+}
+
+/**
+ * Composes the array for each entity to use the makeInsert method, then grabs the ID made by the MySQL server and assigns it to the entity.
+ * 
+ * @param array $ent_array array of entities that have three methods: 
+ *      toArray(): outputs each value of the entity that will be entered into the DB (not foreign keys)
+ *      getNonKeyColumns(): outputs the name of each of the columns matching to the values returned by the toArray() method
+ *      setID(string $pk): Sets the primary key of the entity with $pk
+ * @param string $table_name name of the table in the DB to enter the data into
+ * @param mysqli $conn connection to the mysql server
+ */
+function insertEntity(array $ent_array, string $table_name, mysqli $conn) {
+    $insert_ent = array();
+    foreach ($ent_array as $ent) {
+        if (method_exists($ent, "toArray")) {
+            array_push($insert_ent, $ent->toArray());
+        }
+    }
+    $query = makeInsertQuery($table_name, $ent_array[0]->getNonKeyColumns(), $insert_ent);
+    // Debugging: 
+    // printf("<br>");
+    // printf("$table_name: $query");
+    $conn->query($query);
+    setPK($ent_array, $table_name, $conn);
+}
+
+/**
+ * Queries the database for the primary key of each entity and sets it using the setID method. Must be called directly after inserting the entity array.
+ * 
+ * @param array $ent_array An array of entities that have three methods:
+ *      toArray(): outputs each value of the entity that will be entered into the DB (not foreign keys)
+ *      getNonKeyColumns(): outputs the name of each of the columns matching to the values returned by the toArray() method
+ *      setID(string $pk): Sets the primary key of the entity with $pk
+ * @param string $table_name name of the table in the DB to enter the data into
+ * @param mysqli $conn connection to the mysql server
+ */
+function setPK(array $ent_array, string $table_name, mysqli $conn) {
+    $result = $conn->query("SELECT last_insert_id();"); // Get recently inserted pk
+    $curr_pk = $result->fetch_all(MYSQLI_NUM)[0][0]; // Grab value
+    foreach ($ent_array as $ent) {
+        $ent->setID($curr_pk);
+        $curr_pk++;
+    }
 }
 ?>

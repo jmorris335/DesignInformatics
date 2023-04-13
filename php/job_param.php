@@ -4,11 +4,10 @@
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>3D Printers Overview</title>
+        <title>Print Job Parameters</title>
         <link rel="stylesheet" href="../web/css/styles.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="../web/js/app.js"></script>
-
     </head>
     <body onLoad="changeUnitGroups()">
         <?php include "../web/nav.php"; printTopNav(); ?>
@@ -37,7 +36,7 @@
                             <option value="custom_option">Enter new parameter...</option>
                             <?php
                                 $job_params = getTable("Job_Parameter", $conn);
-                                printDropDownForm($job_params, array("jobparam_Name"));
+                                printDropDownForm($job_params, array("jobparam_name"));
                             ?>
                             <input type="text" name="p_name" style="display:none;" disabled="disabled" onblur="if($(this).val()=='')showOptions('p_name')">
                         </select>
@@ -57,13 +56,8 @@
                     </div>
                     <div class='col-75'>
                         <select id='p_group' name='p_group' onChange="changeUnitNames(this.value);">
-                            <!-- <option value="" disabled selected>Select...</option>
-                            <?php
-                                $results = $conn->query("SELECT DISTINCT `Unit`.`unit_group` FROM `Unit`;");
-                                $unit_groups = $results->fetch_all(MYSQLI_BOTH);
-                                printDropDownForm($unit_groups, array("unit_group"));
-                            ?> -->
-                        </select>
+                            <!-- Options here come from name selection, filtered by js function "changeUnitNames" below-->
+                            </select>
                     </div>
                 </div>
                 <div class='row'>
@@ -78,7 +72,7 @@
                     </div>
                 </div>
                 <div class ='submit-row'>
-                        <input type="submit" value="Submit">
+                        <input type="submit" value="Add Parameter">
                         <input type="reset" value="Reset">
                 </div>
             </form>
@@ -145,22 +139,48 @@
         </script>
 
         <?php
-            // Receive the submitted form
-            if (isset($_POST["designer"])) {
-                $designer = $_POST["designer"];
-                printf("Designer is: $designer");
+            // Receive the submitted form and make a new parameter job
+            include_once ("../generator/classes/print_job.php");
+            include_once ("../generator/classes/job_parameter.php");
+
+            if (isset($_POST["designer"]) && $_POST["material"] && $_POST["printer"]) {
+                $job = new PrintJob($_POST["designer"], $_POST["printer"], $_POST["material"],
+                                    $_POST["stl_file"], $_POST["gcode_file"]);
+                insertEntity(array($job), "Print_Job", $conn);
             }
-            if (isset($_POST["material"])) {
-                $mat = $_POST["material"];
-                printf("Material is: $mat");
+
+            if (isset($_POST["p_name"]) && isset($_POST["p_group"]) && isset($_POST["p_units"])) {
+                $results = $conn->query("SELECT jobparam_name FROM Job_Parameter;");
+                $jp_names = $results->fetch_all(MYSQLI_BOTH);
+                $unique = TRUE;
+                foreach ($jp_names as $jp_name) {
+                    if ($jp_name[0] == $_POST["p_name"]) {
+                        $unique = FALSE;
+                        break;
+                    }
+                }
+                if ($unique) {
+                    $job_param = new JobParameter($_POST["p_name"], $_POST["p_units"]);
+                    insertEntity(array($job_param), "Job_Parameter", $conn);
+                }   
             }
-            if (isset($_POST["printer"])) {
-                $printer = $_POST["printer"];
-                printf("Printer is: $printer");
-            }
-            if (isset($_POST["p_name"])) {
-                $p_name = $_POST["p_name"];
-                printf("Job Param is: $p_name");
+
+            if (isset($_POST["p_value"]) && isset($_POST["p_name"])) {
+                $cols = array("job_ID", "jobparam_ID", "value");
+
+                $results = $conn->query("SELECT MAX(job_ID) FROM Print_Job;");
+                $job_id = $results->fetch_all(MYSQLI_BOTH)[0][0];
+
+                $results = $conn->query("SELECT jobparam_ID FROM Job_Parameter 
+                                         WHERE jobparam_name = ".$_POST['p_name'].";");
+                printf("SELECT jobparam_ID FROM Job_Parameter 
+                WHERE jopparam_name = ".$_POST['p_name'].";");
+                $jobparam_id = $results->fetch_all(MYSQLI_BOTH)[0][0];
+                
+                $input = array(array($job_id, $jobparam_id, $_POST["p_value"]));
+                $query = makeInsertQuery("Print_Job_Has_Job_Parameter", $cols, $input);
+                printf($query);
+                $conn->query($query);
             }
 
             $conn->close();

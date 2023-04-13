@@ -33,13 +33,13 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `3DPrinterDT`.`Printer` ;
 
 CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Printer` (
-  `printer_id` INT NOT NULL AUTO_INCREMENT,
+  `printer_ID` INT NOT NULL AUTO_INCREMENT,
   `location` VARCHAR(45) NULL,
   `IPv6` VARCHAR(25) NULL,
   `model` VARCHAR(45) NULL,
   `vendor_ID` INT NOT NULL DEFAULT -1,
   `printer_name` VARCHAR(45) NULL,
-  PRIMARY KEY (`printer_id`),
+  PRIMARY KEY (`printer_ID`),
   CONSTRAINT `fk_Printer_Vendor1`
     FOREIGN KEY (`vendor_ID`)
     REFERENCES `3DPrinterDT`.`Vendor` (`vendor_ID`)
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Part` (
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Part_Printer1`
     FOREIGN KEY (`printer_ID`)
-    REFERENCES `3DPrinterDT`.`Printer` (`printer_id`)
+    REFERENCES `3DPrinterDT`.`Printer` (`printer_ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -185,7 +185,6 @@ DROP TABLE IF EXISTS `3DPrinterDT`.`Parameter` ;
 CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Parameter` (
   `param_ID` INT NOT NULL AUTO_INCREMENT,
   `param_name` VARCHAR(60) NOT NULL,
-  `value` DECIMAL(10) NULL,
   `unit` VARCHAR(8) NOT NULL,
   PRIMARY KEY (`param_ID`, `unit`),
   CONSTRAINT `fk_Parameter_Unit1`
@@ -206,6 +205,7 @@ DROP TABLE IF EXISTS `3DPrinterDT`.`Part_Parameters` ;
 CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Part_Parameters` (
   `param_ID` INT NOT NULL,
   `part_ID` INT NOT NULL,
+  `value` DECIMAL(8) NULL,
   PRIMARY KEY (`param_ID`, `part_ID`),
   CONSTRAINT `fk_Part_Parameters_has_Part_Part_Parameters1`
     FOREIGN KEY (`param_ID`)
@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Printer_Can_Print_Material` (
   PRIMARY KEY (`printer_ID`, `mat_ID`),
   CONSTRAINT `fk_Printer_has_Material_Printer1`
     FOREIGN KEY (`printer_ID`)
-    REFERENCES `3DPrinterDT`.`Printer` (`printer_id`)
+    REFERENCES `3DPrinterDT`.`Printer` (`printer_ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Printer_has_Material_Material1`
@@ -256,22 +256,22 @@ CREATE INDEX `fk_Printer_has_Material_Printer1_idx` ON `3DPrinterDT`.`Printer_Ca
 DROP TABLE IF EXISTS `3DPrinterDT`.`Printer_State` ;
 
 CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Printer_State` (
-  `printer_id` INT NOT NULL,
+  `printer_ID` INT NOT NULL,
   `timestamp` DATETIME NOT NULL,
   `is_connected` TINYINT NULL DEFAULT 1,
   `is_busy` TINYINT NULL DEFAULT 0,
   `is_available` TINYINT NULL DEFAULT 1,
   `needs_service` TINYINT NULL DEFAULT 0,
   `has_error` TINYINT NULL DEFAULT 0,
-  PRIMARY KEY (`printer_id`, `timestamp`),
+  PRIMARY KEY (`printer_ID`, `timestamp`),
   CONSTRAINT `fk_Network_State_Printer1`
-    FOREIGN KEY (`printer_id`)
-    REFERENCES `3DPrinterDT`.`Printer` (`printer_id`)
+    FOREIGN KEY (`printer_ID`)
+    REFERENCES `3DPrinterDT`.`Printer` (`printer_ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Network_State_Printer1_idx` ON `3DPrinterDT`.`Printer_State` (`printer_id` ASC);
+CREATE INDEX `fk_Network_State_Printer1_idx` ON `3DPrinterDT`.`Printer_State` (`printer_ID` ASC);
 
 
 -- -----------------------------------------------------
@@ -287,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Material_Loaded_In_Printer` (
   PRIMARY KEY (`printer_ID`, `mat_ID`, `timestamp`),
   CONSTRAINT `fk_Printer_has_Material_Printer2`
     FOREIGN KEY (`printer_ID`)
-    REFERENCES `3DPrinterDT`.`Printer` (`printer_id`)
+    REFERENCES `3DPrinterDT`.`Printer` (`printer_ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Printer_has_Material_Material2`
@@ -312,14 +312,17 @@ CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Print_Job` (
   `model` BLOB NULL,
   `code` BLOB NULL,
   `designer_ID` INT NOT NULL,
-  `printer_ID` INT NOT NULL,
-  `job_succeeded` TINYINT NULL,
-  `material_used` DECIMAL(2) NULL,
-  `job_duration` TIME NULL,
   `curator_ID` INT NOT NULL,
   `preparer_ID` INT NOT NULL,
-  `in_queue` TINYINT NULL DEFAULT 1,
-  PRIMARY KEY (`job_ID`),
+  `printer_ID` INT NOT NULL,
+  `job_succeeded` TINYINT NULL,
+  `in_queue` TINYINT NOT NULL DEFAULT 1,
+  `print_volume` DECIMAL(8) NULL,
+  `submission_time` DATETIME NULL,
+  `print_finish_time` DATETIME NULL,
+  `print_start_time` DATETIME NULL,
+  `mat_ID` INT NOT NULL,
+  PRIMARY KEY (`job_ID`, `mat_ID`),
   CONSTRAINT `fk_Print_Job_Employees1`
     FOREIGN KEY (`designer_ID`)
     REFERENCES `3DPrinterDT`.`Employee` (`employee_ID`)
@@ -327,7 +330,7 @@ CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Print_Job` (
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Print_Job_Printer1`
     FOREIGN KEY (`printer_ID`)
-    REFERENCES `3DPrinterDT`.`Printer` (`printer_id`)
+    REFERENCES `3DPrinterDT`.`Printer` (`printer_ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Print_Job_Employees2`
@@ -338,6 +341,11 @@ CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Print_Job` (
   CONSTRAINT `fk_Print_Job_Employees3`
     FOREIGN KEY (`preparer_ID`)
     REFERENCES `3DPrinterDT`.`Employee` (`employee_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Print_Job_Material1`
+    FOREIGN KEY (`mat_ID`)
+    REFERENCES `3DPrinterDT`.`Material` (`mat_ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -350,6 +358,8 @@ CREATE INDEX `fk_Print_Job_Employees2_idx` ON `3DPrinterDT`.`Print_Job` (`curato
 
 CREATE INDEX `fk_Print_Job_Employees3_idx` ON `3DPrinterDT`.`Print_Job` (`preparer_ID` ASC);
 
+CREATE INDEX `fk_Print_Job_Material1_idx` ON `3DPrinterDT`.`Print_Job` (`mat_ID` ASC);
+
 
 -- -----------------------------------------------------
 -- Table `3DPrinterDT`.`Job_Parameter`
@@ -358,8 +368,7 @@ DROP TABLE IF EXISTS `3DPrinterDT`.`Job_Parameter` ;
 
 CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Job_Parameter` (
   `jobparam_ID` INT NOT NULL AUTO_INCREMENT,
-  `jobparam_Name` VARCHAR(45) NULL,
-  `value` DECIMAL(5) NULL,
+  `jobparam_name` VARCHAR(45) NULL,
   `unit` VARCHAR(8) NOT NULL,
   PRIMARY KEY (`jobparam_ID`, `unit`),
   CONSTRAINT `fk_Job_Parameter_Unit1`
@@ -380,6 +389,7 @@ DROP TABLE IF EXISTS `3DPrinterDT`.`Print_Job_Has_Job_Parameter` ;
 CREATE TABLE IF NOT EXISTS `3DPrinterDT`.`Print_Job_Has_Job_Parameter` (
   `job_ID` INT NOT NULL,
   `jobparam_ID` INT NOT NULL,
+  `value` DECIMAL(8) NULL,
   PRIMARY KEY (`job_ID`, `jobparam_ID`),
   CONSTRAINT `fk_Print_Job_has_Job_Parameter_Print_Job1`
     FOREIGN KEY (`job_ID`)
