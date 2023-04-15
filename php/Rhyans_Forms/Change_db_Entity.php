@@ -5,91 +5,40 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>3D Printers Overview</title>
-        <link rel="stylesheet" href="../web/css/styles.css">
+        <link rel="stylesheet" href="../../web/css/styles.css">
     </head>
     <body>
-        <?php include "../web/nav.php"; printTopNav(); ?>
+        <?php include "../../web/nav.php"; printTopNav(); ?>
 
-        <h1> Submit a Print Job </h1>
+        <h1> Submit a change to an intity within the database </h1>
 
         <?php
-            include_once ("functions.php");
-            include_once ("SQL_functions.php");
+            include_once ("../functions.php");
+            include_once ("../SQL_functions.php");
             $conn = connectToServer(to_print: false);
             $conn->query("USE 3DPrinterDT;");
-
-            // Get printer variables for conditional drop down values (passed to JS function)
-            $query = "SELECT Printer.printer_ID, printer_name, model, mat_ID
-                FROM Printer, Printer_State, Material_Loaded_In_Printer
-                WHERE Printer_State.printer_ID = Printer.printer_ID
-                AND Printer_State.printer_ID = Material_Loaded_In_Printer.printer_ID
-                AND Printer_State.is_available = 1;";
-            $result = $conn->query($query);
-            $all_printer_mats = $result->fetch_all(MYSQLI_BOTH);
-            $query = "SELECT Printer.printer_ID, printer_name, model 
-                FROM Printer, Printer_State
-                WHERE Printer_State.printer_ID = Printer.printer_ID
-                AND Printer_State.is_available = 1;";
-            $result = $conn->query($query);
-            $all_printers = $result->fetch_all(MYSQLI_BOTH);
         ?>
 
+<!-- Below is a hard-coded dropdown list of descriptors which will (hopefully, eventually) lead to specific entities one can edit-->
+        
         <div class='form-container'>
-            <form method='post' action='job_param.php'>
+            <form method='post'>
                 <div class='row'>
                     <div class='col-25'>
-                        <label for='designer'>Select the Designer</label>
+                        <label for='entity'>Select the Entity to Edit</label>
                     </div>
                     <div class='col-75'>
-                        <select id='designer' name='designer'>
+                        <select id='entity' name='entity'>
                             <option value="" disabled selected>Select...</option>
-                            <?php
-                                $employees = getTable("Employee", $conn);
-                                printDropDownForm($employees, array("first_name", "last_name"));
-                            ?>
+                            <option value="Printer">Printer</option> 
+                            <option value="Print Job">Print Job</option>
+                            <option value="Maintenance Log">Maintenance Log</option>  
+                        </select>   
+                             
                         </select>
                     </div>
                 </div>
-                <div class='row'>
-                    <div class='col-25'>
-                        <label for='material'>Select the Material to Use</label>
-                    </div>
-                    <div class='col-75'>
-                        <select id='material' name='material' onChange="changePrinter(this.value);">
-                            <option value="" disabled selected>Select...</option>
-                            <?php
-                                $mats = getTable("Material", $conn);
-                                printDropDownForm($mats, array("mat_name", "color"));
-                            ?>
-                        </select>
-                    </div>
-                </div>
-                <div class='row'>
-                    <div class='col-25'>
-                        <label for='printer'>Select Printer</label>
-                    </div>
-                    <div class='col-75'>
-                        <select id='printer' name='printer'>
-                            <option value="" disabled selected>Select...</option>
-                            <!-- Options here come from material selection, filtered by js function "changePrinter" below-->
-                        </select>
-                    </div>
-                </div>
-                <div class='row'>
-                    <div class='col-25'>
-                        <label for='stl_file'>Upload STL File</label>
-                    </div>
-                    <div class='col-75'>
-                        <input type='file' id='stl_file' name='stl_file'>
-                    </div>
-                </div>
-                <div class='row'>
-                    <div class='col-25'>
-                        <label for='gcode_file'>Upload Gcode File</label>
-                    </div>
-                    <div class='col-75'>
-                        <input type='file' id='gcode_file' name='gcode_file'>
-                    </div>
+                
                 </div>
                 <div class ='submit-row'>
                         <input type="submit" value="Submit">

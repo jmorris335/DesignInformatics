@@ -16,6 +16,7 @@ function printTopNav(string $pagetitle = null) {
             <div class="dropdown-content">
                 <a href="http://localhost:8888/DesignInformatics/php/main.php">Printer Interface</a>
                 <a href="http://localhost:8888/DesignInformatics/php/submit_job.php">Submit Job</a>
+                <a href="http://localhost:8888/DesignInformatics/php/Rhyans_Forms/Change_db_Entity.php">Change db Entity</a>
             </div>
         </div>
     ');
