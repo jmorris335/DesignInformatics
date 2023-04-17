@@ -63,7 +63,7 @@
                             <div class ='submit-row'>
                             <input type="submit" value="Add">
                     </form>
-                        <form method='post' action='Printer_Actions/Delete_Printer.php'>
+                        <form method='post' action='Printer_Actions/Delete_Printer2.php'>
                             <div class ='submit-row'>
                             <input type="submit" value="Delete">
                     </form>

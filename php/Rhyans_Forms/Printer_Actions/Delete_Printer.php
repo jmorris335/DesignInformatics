@@ -47,16 +47,6 @@
                         <input type="reset" value="Reset">
                 </div>
                 </form>
-                 <div>
-                    <?php
-                     include_once ("../../../generator/classes/printer.php");
-                     if (isset($_POST["$Select_ID"])) {
-                     $results = $conn->query("DELETE FROM printer WHERE printer_name = ".$_POST['Select_ID'].";");
-                     }
-                     printf($query);
-                    ?>
-                    </div>  
-
                 <p> Design Informatics, (c) 2023 </p>
 
 </div>
