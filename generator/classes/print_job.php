@@ -18,7 +18,7 @@ class PrintJob {
     function __construct(int $designer_id, int $printer_id, int $mat_id,
                          string $model_code, string $gcode_code,
                          int $preparer_id= null, int $curator_id= null, 
-                         bool $job_succeeded=FALSE, bool $in_queue=TRUE, float $print_volume=0.0,
+                         bool $job_succeeded=FALSE, bool $in_queue=FALSE, float $print_volume=0.0,
                          DateTime $submission_time=null, 
                          DateTime $print_start_time=null, 
                          DateTime $print_finish_time=null) {
