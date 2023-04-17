@@ -42,22 +42,31 @@
                         </div>
                         <div class ='submit-row'>
                         <input type="submit" value="Submit">
+                        <input type="reset" value="Reset">
                 </div>
                 </form>
                 <?php
                 // This statement receives infromation from the dropdown, and restates it to confirm to the user while creating the variable $Entity
                     if (isset($_POST["entity"])) {
                         $Entity = $_POST["entity"];
-                        printf("Entity Selected is: $Entity");
+                        printf("Entity Selected is: $Entity<br> Would you like to edit, add, or delete a printer?");
                     } ?>
 
-                    <!-- The prupose of this section is to confirm the selection based on the frist submission, this enables the info to direct the page opened after the entity is chosed-->
+                    <!-- The prupose of this section is to confirm the selection based on the first submission, this enables the info to direct the page opened after the entity is chosen-->
                     <!-- Copy Start here for connecting to new page...-->
                     <?php if ($_POST["entity"]=="Printer"): ?>
-                        <form method='post' action='Edit_Printer.php'>
+                        <form method='post' action='Printer_Actions/Edit_Printer.php'>
                             <div class ='submit-row'>
-                            <input type="submit" value="Confirm">
-                        <form>
+                            <input type="submit" value="Edit">
+                    </form>
+                        <form method='post' action='Printer_Actions/Add_Printer.php'>
+                            <div class ='submit-row'>
+                            <input type="submit" value="Add">
+                    </form>
+                        <form method='post' action='Printer_Actions/Delete_Printer2.php'>
+                            <div class ='submit-row'>
+                            <input type="submit" value="Delete">
+                    </form>
                     <?php endif; ?>
                     <!-- Copy End here...-->
 
