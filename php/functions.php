@@ -81,7 +81,7 @@
         foreach($data as $row) {
             printf("<tr>\n");
             for ($i = 0; $i < count($columns); $i++) {
-                printf("<td>%s</td>\n", $row[$columns[$i]]);
+                printf("<td>%s</td>\n", $row[$i]);
             }
             printf("</tr>\n");
         }
