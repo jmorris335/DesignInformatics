@@ -126,6 +126,25 @@ function getTable(string $table_name, mysqli $conn, string $database_name= "3DPr
     return $results->fetch_all(MYSQLI_BOTH);
 }
 
+/**
+ * Returns a filtered array representing the desired values
+ * 
+ * @param string $table_name The name of the table in the database to select
+ * @param string $value_name The name of the value to retrieve from the table
+ * @param string $filter_name The name of the value to filter by
+ * @param string $filter_value Value of the filter
+ * @param mysqli $conn Connection to the server
+ * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
+ * @return array An 2D array, where each item represents a row in the table, and each field is called by the column names
+ */ 
+function getValues(string $table_name, string $value_name, string $filter_name, string $filter_value,
+                  mysqli $conn, string $database_name= "3DPrinterDT") {
+    $query = "SELECT $value_name FROM $database_name.$table_name
+              WHERE $table_name.$filter_name = \"$filter_value\";";
+    $results = $conn->query($query);
+    return $results->fetch_all(MYSQLI_BOTH);
+}
+
 function getPrinterStatus(int $printer_id, $conn) {
     $query = "SELECT is_connected, is_busy, is_available, needs_service, has_error
         FROM 3DPrinterDT.Printer_State
@@ -215,5 +234,51 @@ function setPK(array $ent_array, string $table_name, mysqli $conn) {
         $ent->setID($curr_pk);
         $curr_pk++;
     }
+}
+
+/**
+ * Returns every job currently listed as in the queue of the printer
+ * @param string $printer_id The pk of the printer
+ * @param mysqli $conn connection to the mysql server
+ * @return array 2D array with each job and all parameters
+ */
+function getPrinterQueue(string $printer_ID, mysqli $conn) {
+    $query = "SELECT * FROM Print_Job
+              WHERE Print_Job.printer_ID = $printer_ID
+              AND Print_Job.in_queue = 1;";
+    $results = $conn->query($query);
+    $jobs = $results->fetch_all(MYSQLI_BOTH);
+    return $jobs;
+}
+
+/**
+ * Returns all print jobs currently printing on the selected printer
+ * @param string $printer_id The pk of the printer
+ * @param mysqli $conn connection to the mysql server
+ * @return array 2D array with each job and all parameters
+ */
+function getCurrentPrintJob(string $printer_ID, mysqli $conn) {
+    $query = "SELECT * FROM Print_Job
+            WHERE Print_Job.printer_ID = 2
+            AND Print_Job.in_queue = 0
+            AND (Print_Job.print_start_time IS NOT NULL
+            OR Print_Job.print_start_time <> '')
+            AND Print_Job.print_start_time < now()
+            AND (Print_Job.print_finish_time IS NULL 
+            OR Print_Job.print_finish_time = ''
+            OR Print_Job.print_finish_time > now());";
+    $results = $conn->query($query);
+    $jobs = $results->fetch_all(MYSQLI_BOTH);
+    return $jobs;
+}
+
+/**
+ * Returns a timestamp from the DB as a properly formatted string
+ * @param string $timestamp The timestamp as read from the mysql DB
+ * @return string The formatted time
+ */
+function formatTimestamp(string $timestamp) {
+    $time = strtotime($timestamp);
+    return date("M d, y g:i A", $time);
 }
 ?>

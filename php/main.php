@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>3D Printers Overview</title>
         <link rel="stylesheet" href="../web/css/styles.css">
+        <script src="../web/js/app.js"></script>
     </head>
     <body>
         <?php include "../web/nav.php"; printTopNav(); ?>
@@ -16,6 +17,7 @@
             include ("functions.php");
 
             $conn = connectToServer(to_print: false);
+            $conn->query("USE 3DPrinterDT;");
             $printers = getTable("Printer", $conn);
 
             printf("<style>
@@ -31,31 +33,48 @@
             }
             </style>");
 
-            printf("<table>");
+            printf("\n<table>");
             for ($i = 0; $i < count($printers); $i++) {
                 if ($i % 2 === 0) {printf("<tr>");}
                 printPrinterCell($printers[$i], $conn);
                 if ($i % 2 === 1) {printf("</tr>");}
             }            
-            printf("</table");
+            printf("\n</table>");
 
             function printPrinterCell(array $row, mysqli $conn) {
                 $id = $row["printer_ID"];
                 $location = $row["location"];
                 $model = $row["model"];
                 $status = getPrinterStatus($id, $conn);
+                $queue_length = count(getPrinterQueue($id, $conn));
 
-                printf("<td> <h3>$model</h3>Location: $location<br>");
+                printf("\n\t<td>\n\t<h3>$model</h3>\n\tLocation: $location\n\t<br>");
                 $color = "yellow";
                 if ($status === "ERROR") {$color = "red";}
                 elseif ($status === "AVAILABLE") {$color = "green";}
-                printf("Status: <b style=\"color:$color;\"> $status </b></td>");
+                printf("\n\tStatus: <b style=\"color:$color;\"> $status </b>");
+                printf("<br>
+                    <form method=\"post\" action=\"queue_frame.php\" target=\"queue_box\">
+                        <input type=\"hidden\" name=\"printer_ID\" id=\"printer_ID\" value=\"$id\">
+                        <input type=\"submit\" onclick=\"displayQueue()\" value=\"Queue: $queue_length\" style=\"width:100%%;padding:3px\">
+                    </form>
+                </td>");
             }
 
             $conn->close();
         ?>
-        <br>
 
+        <iframe class="queue_frame" id="queue_box" name="queue_box" src="queue_frame.php"> </iframe> 
+
+        <script>
+            function displayQueue() {
+                el = document.getElementById("queue_box");
+                if (el.style.display === "block") {el.style.display = "none";}
+                else {el.style.display = "block";} 
+            }
+        </script>
+
+        <br>
         <p> Design Informatics, (c) 2023 </p>
     </body>
 </html>
