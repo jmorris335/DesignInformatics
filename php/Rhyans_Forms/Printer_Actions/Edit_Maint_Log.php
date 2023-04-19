@@ -12,7 +12,7 @@
     <body onLoad="changeUnitGroups()">
         <?php include "../../../web/nav.php"; printTopNav(); ?>
 
-        <h1> Edit Printer Entity </h1>
+        <h1> Edit Maintenance Log </h1>
 
         <?php
             include_once ("../../functions.php");
