@@ -49,7 +49,7 @@
                 // This statement receives infromation from the dropdown, and restates it to confirm to the user while creating the variable $Entity
                     if (isset($_POST["entity"])) {
                         $Entity = $_POST["entity"];
-                        printf("Entity Selected is: $Entity<br> Would you like to edit, add, or delete a printer?");
+                        printf("Entity Selected is: $Entity<br> Would you like to edit or add?");
                     } ?>
 
                     <!-- The prupose of this section is to confirm the selection based on the first submission, this enables the info to direct the page opened after the entity is chosen-->
@@ -65,6 +65,17 @@
                     </form>
                     <?php endif; ?>
                     <!-- Copy End here...-->
+
+                    <?php if ($_POST["entity"]=="Maintenance Log"): ?>
+                        <form method='post' action='Printer_Actions/Edit_Maint_Log.php'>
+                            <div class ='submit-row'>
+                            <input type="submit" value="Edit">
+                        </form>
+                        <!-- <form method='post' action='Printer_Actions/Add_Printer.php'>
+                            <div class ='submit-row'>
+                            <input type="submit" value="Add">
+                        </form> -->
+                    <?php endif; ?>
 
         </div>
         <!-- connect form to if statement to open new formn for editing the database -->

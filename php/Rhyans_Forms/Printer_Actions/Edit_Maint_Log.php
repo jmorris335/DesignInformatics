@@ -25,43 +25,29 @@
             <form method='post' action='' target="_self">
                 <div class='row'>
                     <div class='col-25'>
-                        <label for='p_name'>Printer Name</label>
+                        <label for='log_name'>Choose Log to Edit</label>
                     </div>
                     <div class='col-75'>
-                        <select name="p_name">
+                        <select name="log_name" onchange ="GetText();" >
                             <option disabled selected>Select...</option>
                             <?php
-                                $printer_name = getTable("printer", $conn);
-                                foreach ($printer_name as $pn) {
-                                    printf("<option value=".$pn["printer_ID"].">".$pn["printer_name"]." </option>");
+                                $log_name = getTable("maintenance_log", $conn);
+                                foreach ($log_name as $ln) {
+                                    printf("<option value=".$ln["mlog_ID"].">".$ln["timestamp"]." </option>");
                                 }
                             ?>
-                        </select>
-                    </div>
-                </div>
-
-                <div class='row'>
-                    <div class='col-25'>
-                        <label for='Att_Edit'>Attribute to Edit</label>
-                    </div>
-                    <div class='col-75'>
-                        <select id='Att_Edit' name='Att_Edit'>
-                            <option value="location">Location</option>
-                            <option value="IPv6">IP address</option>
-                            <option value="model">Model</option>
-                            <option value="printer_name">Printer Name</option>
                             </select>
                     </div>
                 </div>
 
                 <div class='row'>
                     <div class='col-25'>
-                        <label for='Att_value'>New Value</label>
+                        <label for='Notes_value'>Edit Notes</label>
                     </div>
                     <div class='col-75'>
-                        <input type="text" id='Att_value' name='Att_value'>
+                        <textarea id="Notes_value" name="Notes_value" rows="10" cols="50"></textarea>
                     </div>
-                </div> 
+                </div>
 
                 <div class ='submit-row'>
                         <input type="submit" value="Submit">
@@ -71,9 +57,8 @@
         </div>
 
         <script>
-            <?php $printer_name = getTable("printer", $conn);?>
-            const printer_name = <?php echo json_encode($printer_name); ?>;
-            const att_options = document.getElementById("Att_Edit");
+            <?php $log_name = getTable("maintenance_log", $conn);?>
+            const log_name = <?php echo json_encode($log_name); ?>;
         </script>
 
         <?php
@@ -81,16 +66,20 @@
 
             include_once ("../../../generator/classes/printer.php");
 
-             if (isset ($_POST["p_name"]) && isset($_POST["Att_Edit"]) && !empty($_POST["Att_value"])){
-                $query = "UPDATE `printer` SET `".$_POST['Att_Edit']."` = \"".$_POST['Att_value']."\" WHERE `printer`.`printer_ID` = '".$_POST["p_name"]."';";
-                $results = $conn-> query($query);
-                printf("<br> Query: $query"); }
+             if (isset ($_POST["log_name"]) && !empty($_POST["Notes_value"])){
+                $query = "UPDATE `maintenance_log` SET `notes` = \"".$_POST['Notes_value']."\" WHERE `maintenance_log`.`mlog_ID` = '".$_POST["log_name"]."';";
+                $Results = $conn-> query($query);
+                printf("<br> Query: $query");
+            }
                 else{
-                printf("<b style=\"color:red;\"> You must fill all fields </b>");
              };
 
             $conn->close();
         ?>
+        <!-- <script>
+            function GetText();
+            var notes = "<?php //echo $conn->query("SELECT `notes` FROM `maintenance_log` WHERE `maintenance_log`.`mlog_ID` = '".$_POST["log_name"]."';");?>"
+        </script> -->
 
         <p> Design Informatics, (c) 2023 </p>
     </body>
