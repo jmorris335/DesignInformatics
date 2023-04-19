@@ -63,16 +63,6 @@
      *      printf("<br>");
      */
     function printTable(array $data, array $columns) {
-        printf("<style>
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-        th, td {
-            text-align: center;
-            padding: 5px;
-        }
-        </style>");
 
         printf("<table border = '2'>");
         for ($i = 0; $i < count($columns); $i++) {

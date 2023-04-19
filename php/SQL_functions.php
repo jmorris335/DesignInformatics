@@ -108,6 +108,23 @@ function getColumnLabels(string $table_name, mysqli $conn, string $database_name
 }
 
 /**
+ * Returns the data type for each column in the table
+ * 
+ * @param string $table_name The name of the table in the database
+ * @param mysqli $conn Connection to the server
+ * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
+ * @return array A 2D array, where the key for each field is the column name, and the value is the datatype as a string
+ */
+function getDataTypes(string $table_name, mysqli $conn, string $database_name= "3DPrinterDT") {
+    $query = "SELECT column_name,data_type 
+              FROM information_schema.columns 
+              WHERE table_schema = '$database_name' 
+              AND table_name = '$table_name';";
+    $results = $conn->query($query);
+    return $results->fetch_all(MYSQLI_BOTH);
+}
+
+/**
  * Returns an array representing the inputted table
  * 
  * @param string $table_name The name of the table in the database to select
@@ -141,6 +158,26 @@ function getValues(string $table_name, string $value_name, string $filter_name, 
                   mysqli $conn, string $database_name= "3DPrinterDT") {
     $query = "SELECT $value_name FROM $database_name.$table_name
               WHERE $table_name.$filter_name = \"$filter_value\";";
+    $results = $conn->query($query);
+    return $results->fetch_all(MYSQLI_BOTH);
+}
+
+/**
+ * Returns a list of all foreign keys composing the specified table
+ * 
+ * @param string $table_name The name of the table in the database to search within
+ * @param mysqli $conn Connection to the server
+ * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
+ * @return array An 2D array, where each row is a foreign key with column labels:
+ *      - COLUMN_NAME: Name of the column in the selected table referencing the foreign key
+ *      - REFERENCED_TABLE_NAME: Name of the table holding the foreign key
+ *      - REFERENCED_COLUMN_NAME: Name of the column in the foreign key table
+ */
+function getForeignKeysInTable(string $table_name, mysqli $conn, string $database="3DPrinterDT") {
+    $query = "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+              FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+              WHERE REFERENCED_TABLE_SCHEMA = '3DPrinterDT' 
+              AND TABLE_NAME = '$table_name';";
     $results = $conn->query($query);
     return $results->fetch_all(MYSQLI_BOTH);
 }
@@ -259,7 +296,7 @@ function getPrinterQueue(string $printer_ID, mysqli $conn) {
  */
 function getCurrentPrintJob(string $printer_ID, mysqli $conn) {
     $query = "SELECT * FROM Print_Job
-            WHERE Print_Job.printer_ID = 2
+            WHERE Print_Job.printer_ID = $printer_ID
             AND Print_Job.in_queue = 0
             AND (Print_Job.print_start_time IS NOT NULL
             OR Print_Job.print_start_time <> '')

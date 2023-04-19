@@ -6,6 +6,8 @@
 </html>
 
 <?php
+//TODO: Make part_parameter.php, restructure so parameter.php only takes unit, not value
+
 /**
  *  This file creates the initial entities used in the database. This does not invoke any manually created entities, nor edits made to the entities originally. If called it will not overwrite any entities, unless specified to do so. It can be called from the generator index page.
  */
