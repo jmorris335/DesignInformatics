@@ -26,6 +26,7 @@
 
         <div class='form-container'>
             <form method='post' action='' target="_self">
+                
                 <div class='row'>
                     <div class='col-25'>
                         <label for='p_name'>Parameter Name</label>
@@ -44,6 +45,8 @@
                         </select>
                     </div>
                 </div>
+
+            
                 <div class='row'>
                     <div class='col-25'>
                         <label for='p_value'>Value</label>
@@ -52,6 +55,7 @@
                         <input type="text" id='p_value' name='p_value'>
                     </div>
                 </div>
+
                 <div class='row'>
                     <div class='col-25'>
                         <label for='p_group'>Type</label>
@@ -62,6 +66,7 @@
                             </select>
                     </div>
                 </div>
+
                 <div class='row'>
                     <div class='col-25'>
                         <label for='p_units'>Units</label>
@@ -73,6 +78,7 @@
                         </select>
                     </div>
                 </div>
+
                 <div class ='submit-row'>
                         <input type="submit" value="Add Parameter">
                         <input type="reset" value="Reset">
