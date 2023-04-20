@@ -78,9 +78,22 @@
 
             $conn->close();
         ?>
+        <div style="float:left;">
+            <form method = 'post' action ="print_jobs.php">
+                <input type="hidden" name="printer_ID" id="printer_ID" value=<?php printf($printer) ?>>
+                <input type = "submit" value="Print Jobs">
+            </form>
+        </div>  
+        <div style="float:left;">
+            <form method = 'post' action ="maintenance_log.php">
+                <input type="hidden" name="printer_ID" id="printer_ID" value=<?php printf($printer) ?>>
+                <input type="submit" value="Maintenance Log">
+            </form>
+        </div>
 
-        
-
+        <br>
+        <br>
+        <br>
         <p> Design Informatics, (c) 2023 </p>
      </body>
 </html>
