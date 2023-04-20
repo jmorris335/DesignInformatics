@@ -20,22 +20,44 @@
 
             $printers = getTable("Printer", $conn);
 
-            if (isset($_POST['printer_ID'])) {$printer = $_POST['printer_ID'];}
-            else {$printer = 1;} //variable name may change, check with john on printer status page
+            if (isset($_POST['printer_ID'])) {
+                $printer = $_POST['printer_ID'];
+                $printer_name = $_POST['printer_name'];
+                printf("<h2>".$printer_name."</h2>");
+            }
+            else {$printer = 1; $printer_name = "Printer Not Found";printf("<h3>".$printer_name."</h3>");}
+            
 
+            $sql_job = "SELECT print_job.job_ID, print_job.print_start_time
+            FROM print_job
+            WHERE print_job.printer_ID = ".$printer." 
+            AND print_job.print_start_time IS NOT NULL
+            AND print_job.print_finish_time IS NULL
+            ;";
 
-            $sql_printJob = "SELECT printer.printer_name, printer.location, 
-            vendor.vendor_name, print_job.job_ID, print_job.job_succeeded, print_job.in_queue
+            $sql_printer = "SELECT printer.model, printer.location, vendor.vendor_name
+            FROM printer, vendor
+            WHERE printer.printer_ID = ".$printer." 
+            AND printer.vendor_ID = vendor.vendor_ID
+            ;";
+
+            $sql_printer_full = "SELECT printer.model, printer.location, 
+            vendor.vendor_name, print_job.job_ID, print_job.print_start_time
             FROM printer, vendor, print_job 
             WHERE printer.printer_ID = ".$printer." 
             AND print_job.printer_ID = ".$printer." 
-            AND print_job.in_queue = 1 
-            AND printer.vendor_ID = vendor.vendor_ID;";
+            AND print_job.print_start_time IS NOT NULL
+            AND print_job.print_finish_time IS NULL
+            AND printer.vendor_ID = vendor.vendor_ID
+            ;";
+
+            
 
             $sql_state = "SELECT printer_state.is_connected, printer_state.is_busy, 
             printer_state.needs_service, printer_state.has_error, printer_state.is_available
             FROM printer_state
-            WHERE printer_state.printer_ID = ".$printer.";";
+            WHERE printer_state.printer_ID = ".$printer."
+            ;";
 
             $sql_material = "SELECT Material.mat_name, Material.color, Vendor.vendor_name, 
             Material_Loaded_In_Printer.volume
@@ -56,12 +78,21 @@
             printf("<h3>Status: <b style=\"color:$color;\"> $status </b></h3>");
 
             //Print Job Table
-            $results = $conn->query($sql_printJob);
-            $job_results = $results->fetch_all(MYSQLI_BOTH);
-            $cols = array("Printer Name", "Printer Location", "Printer Manufacturer", 
-            "Print Job ID", "Job Completion", "Job Queue Status");
+            $results = $conn->query($sql_printer);
+            $printer_results = $results->fetch_all(MYSQLI_BOTH);
 
-            printTable($job_results, $cols);
+            $results = $conn->query($sql_job);
+            $job_results = $results->fetch_all(MYSQLI_BOTH);
+
+            $results = $conn->query($sql_printer_full);
+            $printer_results_full = $results->fetch_all(MYSQLI_BOTH);
+
+            $cols = array("Model", "Printer Location", "Printer Manufacturer", 
+            "Current Print Job ID", "Job Start Time");
+            if (count($job_results) == 0) {
+                $printer_results_full = $printer_results;
+            }
+            printTable($printer_results_full, $cols);
 
             //Materials Table
             $results = $conn->query($sql_material);
@@ -80,13 +111,15 @@
         ?>
         <div style="float:left;">
             <form method = 'post' action ="print_jobs.php">
-                <input type="hidden" name="printer_ID" id="printer_ID" value=<?php printf($printer) ?>>
+                <input type="hidden" name="printer_ID" id="printer_ID" value="<?php printf($printer) ?>">
+                <input type="hidden" name="printer_name" id="printer_name" value="<?php printf($printer_name) ?>">
                 <input type = "submit" value="Print Jobs">
             </form>
         </div>  
         <div style="float:left;">
             <form method = 'post' action ="maintenance_log.php">
-                <input type="hidden" name="printer_ID" id="printer_ID" value=<?php printf($printer) ?>>
+                <input type="hidden" name="printer_ID" id="printer_ID" value="<?php printf($printer) ?>">
+                <input type="hidden" name="printer_name" id="printer_name" value="<?php printf($printer_name) ?>">
                 <input type="submit" value="Maintenance Log">
             </form>
         </div>

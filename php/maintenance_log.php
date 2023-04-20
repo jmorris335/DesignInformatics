@@ -18,8 +18,12 @@
             $conn = connectToServer(to_print: false);
             $conn->query("USE 3DPrinterDT;");
 
-            if (isset($_POST['printer_ID'])) {$printer = $_POST['printer_ID'];}
-            else {$printer = 1;}
+            if (isset($_POST['printer_ID'])) {
+                $printer = $_POST['printer_ID'];
+                $printer_name = $_POST['printer_name'];
+                printf("<h2>".$printer_name."</h2>");
+            }
+            else {$printer = 1; $printer_name = "Printers Not Found";printf("<h3>".$printer_name."</h3>");}
 
             $query_log = "SELECT maintenance_log.timestamp, part.part_name, employee.first_name, employee.last_name, maintenance_log.notes
             FROM maintenance_log, employee, part, part_has_maintenance_log

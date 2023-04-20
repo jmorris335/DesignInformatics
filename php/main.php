@@ -42,6 +42,7 @@
             printf("\n</table>");
 
             function printPrinterCell(array $row, mysqli $conn) {
+                $printer_name = $row["printer_name"];
                 $id = $row["printer_ID"];
                 $location = $row["location"];
                 $model = $row["model"];
@@ -57,6 +58,11 @@
                     <form method=\"post\" action=\"queue_frame.php\" target=\"queue_box\">
                         <input type=\"hidden\" name=\"printer_ID\" id=\"printer_ID\" value=\"$id\">
                         <input type=\"submit\" onclick=\"displayQueue()\" value=\"Queue: $queue_length\" style=\"width:100%%;padding:3px\">
+                    </form>
+                    <form method=\"post\" action=\"printer_details.php\">
+                    <input type=\"hidden\" name=\"printer_ID\" id=\"printer_ID\" value=\"$id\">
+                    <input type=\"hidden\" name=\"printer_name\" id=\"printer_name\" value=\"$printer_name\">
+                    <input type=\"submit\" value=\"Printer Details\" style=\"width:100%%;padding:3px\">
                     </form>
                 </td>");
             }
