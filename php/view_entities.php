@@ -16,7 +16,7 @@
             $conn = connectToServer(to_print: false);
             $conn->query("USE 3DPrinterDT;");
 
-            if (isset($_POST['table_name'])) {$table_name = $_POST['table_name'];}
+            if (isset($_POST['entity'])) {$table_name = $_POST['entity'];}
             else {$table_name = "Print_Job";}
             
             $attributes = getColumnLabels($table_name, $conn);
@@ -38,6 +38,7 @@
                             <tr>
                                 <td>
                                     <form method=\"post\" action=\"view_entity.php\">
+                                    <input type=\"hidden\" name=\"entity\" id=\"entity\" value=\"$table_name\">
                                     <input type=\"hidden\" name=\"entity_ID\" id=\"entity_ID\" value=\"$entity_id\">
                                     <input type=submit class='link' value=\"$entity_id\">
                                 </td>");

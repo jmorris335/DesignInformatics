@@ -16,7 +16,7 @@
             $conn = connectToServer(to_print: false);
             $conn->query("USE 3DPrinterDT;");
 
-            if (isset($_POST['table_name'])) {$table_name = $_POST['table_name'];}
+            if (isset($_POST['entity'])) {$table_name = $_POST['entity'];}
             else {$table_name = "Printer";}
             
             $attributes = getColumnLabels($table_name, $conn);
