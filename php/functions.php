@@ -16,25 +16,26 @@
      */
     function connectToServer(string $servername = "localhost", string $username = "root", string $password = "root", bool $to_print = true, int $port = 8889) {       
         // Create connection for Windows
-        if(OSisWindows()){    
-        $conn = new mysqli("localhost","root","root",null,8889);  
-        // Check connection  
-        if ($conn) {
-            echo 'connected';
-          } else {
-            echo 'not connected';
-          }
+        if(OSisWindows()) {    
+            $conn = new mysqli("localhost","root","root",null,8889);  
+            // Check connection  
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+            if ($to_print) {
+                echo "Connected successfully";
+            }
         }
         // Create connection for other OS
-        else{
-        $conn = new mysqli($servername, $username, $password, null, $port);
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-        if ($to_print) {
-            echo "Connected successfully";
-        }
+        else {
+            $conn = new mysqli($servername, $username, $password, null, $port);
+            // Check connection
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+            if ($to_print) {
+                echo "Connected successfully";
+            }
         }
         return $conn;
     }
