@@ -20,7 +20,6 @@
         $conn = new mysqli("localhost","root","root",null,8889);  
         // Check connection  
         if ($conn) {
-            echo 'connected';
           } else {
             echo 'not connected';
           }
