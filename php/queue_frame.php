@@ -31,7 +31,7 @@
     <?php
         printf("<h3> Printer $printer_ID Queue </h3>");
 
-        printf("<table class=\"queue_table\">");
+        printf("<table>");
         for ($i = 0; $i < count($columns); $i++) {
             printf("<th>%s</th>\n", $columns[$i]);
         }

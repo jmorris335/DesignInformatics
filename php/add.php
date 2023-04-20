@@ -90,7 +90,7 @@
         ?>
 
         <div class='form-container'>
-            <form method='post' action='' targe='_self'>
+            <form method='post' action='' target='_self'>
                 <?php
                     for ($i = 0; $i < count($attributes); $i++) {
                         if (in_array($attributes[$i], array_column($fks, 'COLUMN_NAME'))) {
