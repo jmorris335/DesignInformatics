@@ -54,9 +54,9 @@ input[type=submit] {
     min-width: 8em;
     margin-right: 1em;
 }
-input[type=submit].link { 
-    border: none; 
-    background: none; 
+input[type=submit].link, .button_link { 
+    all: unset;
+    cursor: pointer;
     display: inline; 
     color: blue; 
     text-decoration: underline; 

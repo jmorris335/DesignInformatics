@@ -57,19 +57,19 @@ function makeInsertQuery(string $table_name, array $col_set, array $values_set) 
 function makeUpdateQuery(string $table_name, array $set_columns, array $set_values, array $where_columns, array $where_values) {
     $set_str = "";
     for ($i = 0; $i < min(array(count($set_columns), count($set_values))); $i++) {
-        $set_str = $set_str.$set_columns[$i]." = ".$set_values[$i];
+        $set_str = $set_str.$set_columns[$i]." = \"".$set_values[$i]."\"";
         if ($i != count($set_columns) - 1) {
             $set_str = $set_str." AND ";
         }
     }
     $where_str = "";
     for ($i = 0; $i < min(array(count($where_columns), count($where_values))); $i++) {
-        $set_str = $set_str.$where_columns[$i]." = ".$where_values[$i];
+        $where_str = $where_str.$where_columns[$i]." = \"".$where_values[$i]."\"";
         if ($i != count($where_columns) - 1) {
-            $set_str = $set_str." AND ";
+            $where_str = $where_str." AND ";
         }
     }
-    return "UPDATE $table_name SET $set_str WHERE $where_str";
+    return "UPDATE $table_name SET $set_str WHERE $where_str;";
 }
 
 /**
@@ -182,7 +182,7 @@ function getForeignKeysInTable(string $table_name, mysqli $conn, string $databas
     return $results->fetch_all(MYSQLI_BOTH);
 }
 
-function getPrinterStatus(int $printer_id, $conn) {
+function getPrinterStatus(int $printer_id, mysqli $conn) {
     $query = "SELECT is_connected, is_busy, is_available, needs_service, has_error
         FROM 3DPrinterDT.Printer_State
         WHERE timestamp = (
@@ -207,6 +207,57 @@ function getPrinterStatus(int $printer_id, $conn) {
     else {
         return "ERROR";
     }
+}
+
+/**
+ * Sets the printer status
+ * 
+ * @param int $printer_id PK of printer to update status for
+ * @param string $new_status String with one of the following values:
+ *      - "NOT CONNECTED": Printer is not reachable
+ *      - "AVAILABLE": Printer is available for printing
+ *      - "BUSY": Printer is working properly but not available for printing
+ *      - "NEEDS SERVICE": Printer is not working properly and needs maintenance
+ *      - "ERROR": Default state, where there is some error preventing proper status
+ * @param mysqli $conn Connection to the db
+ */
+function setPrinterStatus(int $printer_id, string $new_status, mysqli $conn) {
+    $has_error = false;
+        $new_status = strtolower($new_status);
+        if ($new_status === "not connected") {
+            $is_connected = false;
+            $is_available = false;
+        }
+        else {
+            $is_connected = true;
+            if($new_status === "available") {
+                $is_available = true;
+                $is_busy = false;
+                $needs_service = false;
+            }
+            else {
+                $is_available = false;
+                if($new_status === "busy") {
+                    $is_busy = true;
+                    $needs_service = false;
+                }
+                else {
+                    $is_busy = false;
+                    if($new_status === "needs service") {
+                        $needs_service = true;
+                    }
+                    else {
+                        $has_error = true;
+                    }
+                }
+            }
+        }
+    $date = new DateTime("now");
+    $date_string = $date->format("Ymd");
+    $insert_cols = array("printer_ID", "timestamp", "is_available", "is_connected", "is_busy", "needs_service", "has_error");
+    $insert_vals = array($printer_id, $date_string, $is_available, $is_connected, $is_busy, $needs_service, $has_error);
+    $query = makeInsertQuery("Printer_State", $insert_cols, $insert_vals);
+    $conn->query($query);
 }
 
 /**
@@ -280,9 +331,11 @@ function setPK(array $ent_array, string $table_name, mysqli $conn) {
  * @return array 2D array with each job and all parameters
  */
 function getPrinterQueue(string $printer_ID, mysqli $conn) {
-    $query = "SELECT * FROM Print_Job
+    $query = "SELECT *
+              FROM Print_Job
               WHERE Print_Job.printer_ID = $printer_ID
-              AND Print_Job.in_queue = 1;";
+              AND Print_Job.in_queue = 1
+              ORDER BY Print_Job.submission_time DESC;";
     $results = $conn->query($query);
     $jobs = $results->fetch_all(MYSQLI_BOTH);
     return $jobs;

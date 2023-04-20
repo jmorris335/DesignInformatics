@@ -53,9 +53,9 @@
                 $out_row["Designer"] = "$fn $ln";
                 $out_row["Material"] = getValues("Material", "mat_name", "mat_ID", $job["mat_ID"], $conn)[0][0];
                 $out_row["Print Volume"] = $job["print_volume"];
-                $out_row["Submission Time"] = formatTimestamp(($job["submission_time"]));
-                $out_row["Start Time"] = formatTimestamp(($job["print_start_time"]));
-                $out_row["Finish Time"] = formatTimestamp(($job["print_start_time"]));
+                $out_row["Submission Time"] = is_null($job["submission_time"]) ? "N/A" : formatTimestamp(($job["submission_time"]));
+                $out_row["Start Time"] = is_null($job["print_start_time"]) ? "N/A" : formatTimestamp(($job["print_start_time"]));
+                $out_row["Finish Time"] = is_null($job["print_finish_time"]) ? "N/A" : formatTimestamp(($job["print_finish_time"]));
                 array_push($out, $out_row);
             }
             return $out;

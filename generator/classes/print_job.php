@@ -36,12 +36,9 @@ class PrintJob {
         $this->job_succeeded = $job_succeeded;
         $this->in_queue = $in_queue;
         $this->print_volume = $print_volume;
-        if (is_null($submission_time)) {$this->setRandomTimes();}
-        else {
-            $this->submission_time = $submission_time;
-            $this->print_finish_time = $print_finish_time;
-            $this->print_start_time = $print_start_time;
-        }
+        $this->submission_time = $submission_time;
+        $this->print_finish_time = $print_finish_time;
+        $this->print_start_time = $print_start_time;
     }
 
     function setID(int $new_id) {
@@ -57,18 +54,19 @@ class PrintJob {
     }
 
     function getCurrentTime(): DateTime {
-        return new DateTime();
+        return new DateTime("now");
     }
 
-    function getRandomTimeDuration(): DateInterval {
-        return DateInterval::createFromDateString("15 seconds");
-    }
+    // function getRandomTimeDuration(): DateInterval {
+    //     return DateInterval::createFromDateString("15 seconds");
+    // }
 
-    function setRandomTimes() {
-        $this->submission_time = $this->getCurrentTime();
-        $this->print_start_time = $this->submission_time->add($this->getRandomTimeDuration());
-        $this->print_finish_time = $this->print_start_time->add($this->getRandomTimeDuration());
-    }
+    // function setRandomTimes() {
+    //     // DEPRECATED 20 Apr 2023 by John Morris
+    //     $this->submission_time = $this->getCurrentTime();
+    //     $this->print_start_time = $this->submission_time->add($this->getRandomTimeDuration());
+    //     $this->print_finish_time = $this->print_start_time->add($this->getRandomTimeDuration());
+    // }
 
     function getNonKeyColumns() {
         return array("designer_ID", "curator_ID", "preparer_ID", "printer_ID", "mat_ID",

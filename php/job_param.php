@@ -22,6 +22,20 @@
 
             $results = $conn->query("SELECT DISTINCT `Unit`.`unit_group` FROM `Unit`;");
             $unit_groups = $results->fetch_all(MYSQLI_BOTH);
+
+            // Receive the submitted form and make a new parameter job
+            include_once ("../generator/classes/print_job.php");
+            include_once ("../generator/classes/job_parameter.php");
+
+            if (isset($_POST["designer"]) && $_POST["material"] && $_POST["printer"]) {
+                // On first page access create a new print job (if redirected from submit_job.php)
+                $job = new PrintJob($_POST["designer"], $_POST["printer"], $_POST["material"],
+                                    $_POST["stl_file"], $_POST["gcode_file"]);
+                insertEntity(array($job), "Print_Job", $conn);
+                $results = $conn->query("SELECT MAX(job_ID) FROM Print_Job;");
+                $job_id = $results->fetch_all(MYSQLI_BOTH)[0][0];
+                $_POST["job_id"] = $job_id;
+            }
         ?>
 
         <div class='form-container'>
@@ -78,9 +92,11 @@
                         </select>
                     </div>
                 </div>
+                <input type="hidden" name="job_id" id="job_id" value="<?php printf($_POST['job_id']); ?>">
 
                 <div class ='submit-row'>
                         <input type="submit" value="Add Parameter">
+                        <input type="submit" value="Submit to Queue" formaction="printer_overview.php">
                         <input type="reset" value="Reset">
                 </div>
             </form>
@@ -148,17 +164,6 @@
         </script>
 
         <?php
-            // Receive the submitted form and make a new parameter job
-            include_once ("../generator/classes/print_job.php");
-            include_once ("../generator/classes/job_parameter.php");
-
-            if (isset($_POST["designer"]) && $_POST["material"] && $_POST["printer"]) {
-                // On first page access create a new print job (if redirected from submit_job.php)
-                $job = new PrintJob($_POST["designer"], $_POST["printer"], $_POST["material"],
-                                    $_POST["stl_file"], $_POST["gcode_file"]);
-                insertEntity(array($job), "Print_Job", $conn);
-            }
-
             if (!empty($_POST["p_name"]) && !empty($_POST["p_units"])) {
                 // Check if the new job parameter should be added to the db (and add it if so)
                 $jp_name = getJobParamName($_POST["p_name"], $conn);

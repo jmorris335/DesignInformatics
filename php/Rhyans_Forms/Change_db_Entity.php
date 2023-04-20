@@ -46,8 +46,7 @@
                         </div>
                         <div class ='submit-row'>
                         <input type="submit" value="Add Entity" formaction="../add.php">
-                        <input type="submit" value="Edit Entity">
-                        <input type="submit" value="View Entity" formaction="../view_entities.php">
+                        <input type="submit" value="Edit/View Entity" formaction="../view_entities.php">
                         <input type="reset" value="Reset">
                 </div>
                 </form>
