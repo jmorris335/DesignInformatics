@@ -15,9 +15,11 @@
         <?php
             include ("SQL_functions.php");
             include ("functions.php");
+            include ("../generator/printer_functionality.php");
 
             $conn = connectToServer(to_print: false);
             $conn->query("USE 3DPrinterDT;");
+            // processQueue($conn);
             $printers = getTable("Printer", $conn);
 
             printf("<style>
@@ -79,6 +81,15 @@
                 else {el.style.display = "block";} 
             }
         </script>
+
+        <?php
+        //Handle submitted parts
+            if (isset($_POST['job_id'])) {
+                $job_id = $_POST['job_id'];
+                printf("Received Print Job, ID=$job_id");
+            }
+
+        ?>
 
         <br>
         <p> Design Informatics, (c) 2023 </p>

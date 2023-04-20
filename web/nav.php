@@ -7,7 +7,7 @@ function printTopNav(string $pagetitle = null) {
                     <i class="fa fa-caret-down"></i>
                 </button>
                 <div class="dropdown-content">
-                    <a href="http://localhost:8888/DesignInformatics/php/main.php">Printer Interface</a>
+                    <a href="http://localhost:8888/DesignInformatics/php/printer_overview.php">Printer Interface</a>
                     <a href="http://localhost:8888/DesignInformatics/php/submit_job.php">Submit Job</a>
                 </div>
             </div>
