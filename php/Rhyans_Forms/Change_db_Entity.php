@@ -77,6 +77,17 @@
                         </form> -->
                     <?php endif; ?>
 
+                    <?php if ($_POST["entity"]=="Printer Part"): ?>
+                        <form method='post' action='Printer_Actions/Edit_Printer_Part.php'>
+                            <div class ='submit-row'>
+                            <input type="submit" value="Edit">
+                        </form>
+                        <!-- <form method='post' action='Printer_Actions/Add_Printer.php'>
+                            <div class ='submit-row'>
+                            <input type="submit" value="Add">
+                        </form> -->
+                    <?php endif; ?>
+
         </div>
         <!-- connect form to if statement to open new formn for editing the database -->
         <p> Design Informatics, (c) 2023 </p>
