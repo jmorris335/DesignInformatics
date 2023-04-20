@@ -23,16 +23,18 @@
             $printer = 1; //htmlspecialchars($_POST['printer_ID']); //variable name may change, check with john on printer status page
 
 
-            $sql_printJob = "SELECT printer.printer_ID, printer.printer_name, printer.location, 
-            vendor.vendor_name, print_job.job_ID, print_job.job_succeeded, print_job.in_queue, 
-            printer_state.is_connected, printer_state.is_busy, printer_state.is_available, 
-            printer_state.needs_service, printer_state.has_error
-            FROM printer, printer_state, vendor, print_job 
+            $sql_printJob = "SELECT printer.printer_name, printer.location, 
+            vendor.vendor_name, print_job.job_ID, print_job.job_succeeded, print_job.in_queue
+            FROM printer, vendor, print_job 
             WHERE printer.printer_ID = ".$printer." 
-            AND printer_state.printer_ID = ".$printer." 
             AND print_job.printer_ID = ".$printer." 
             AND print_job.in_queue = 1 
             AND printer.vendor_ID = vendor.vendor_ID;";
+
+            $sql_state = "SELECT printer_state.is_connected, printer_state.is_busy, 
+            printer_state.needs_service, printer_state.has_error, printer_state.is_available
+            FROM printer_state
+            WHERE printer_state.printer_ID = ".$printer.";";
 
             $sql_material = "SELECT Material.mat_name, Material.color, Vendor.vendor_name, 
             Material_Loaded_In_Printer.volume
@@ -42,12 +44,21 @@
             AND Material_Loaded_In_Printer.mat_ID = Material.mat_ID
             ;";
 
+
+            $results = $conn->query($sql_state);
+            $status_results = $results->fetch_all(MYSQLI_BOTH);
+            if ($status_results[0] == 0) {$color = 'Red'; $status = 'Disconnected';}
+            elseif ($status_results[1] == 1) {$color = 'Yellow'; $status = 'Busy';}
+            elseif ($status_results[2] == 1) {$color = 'Red'; $status = 'Needs Service';}
+            elseif ($status_results[3] == 1) {$color = 'Red'; $status = 'Printer Error';}
+            else {$color = 'Green'; $status = 'Available';}
+            printf("<h3>Status: <b style=\"color:$color;\"> $status </b></h3>");
+
             //Print Job Table
             $results = $conn->query($sql_printJob);
             $job_results = $results->fetch_all(MYSQLI_BOTH);
-            $cols = array("Printer ID", "Printer Name", "Printer Location", "Printer Manufacturer", 
-            "Print Job ID", "Job Completion", "Job Queue Status", "Connection Status", "Busy Status", 
-            "Printer Availability", "Needs Maintenance", "Error Status");
+            $cols = array("Printer Name", "Printer Location", "Printer Manufacturer", 
+            "Print Job ID", "Job Completion", "Job Queue Status");
 
             printTable($job_results, $cols);
 
