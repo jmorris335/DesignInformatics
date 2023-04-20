@@ -20,7 +20,8 @@
 
             $printers = getTable("Printer", $conn);
 
-            $printer = 1; //htmlspecialchars($_POST['printer_ID']); //variable name may change, check with john on printer status page
+            if (isset($_POST['printer_ID'])) {$printer = $_POST['printer_ID'];}
+            else {$printer = 1;} //variable name may change, check with john on printer status page
 
 
             $sql_printJob = "SELECT printer.printer_name, printer.location, 
@@ -77,7 +78,9 @@
 
             $conn->close();
         ?>
+
         
+
         <p> Design Informatics, (c) 2023 </p>
      </body>
 </html>
