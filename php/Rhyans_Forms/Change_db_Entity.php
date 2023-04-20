@@ -54,7 +54,7 @@
                 // This statement receives infromation from the dropdown, and restates it to confirm to the user while creating the variable $Entity
                     if (isset($_POST["entity"])) {
                         $Entity = $_POST["entity"];
-                        printf("Entity Selected is: $Entity<br> Would you like to edit or add?");
+                        printf("Entity Selected is: $Entity<br> Please Confirm");
                     } ?>
 
                     <!-- The prupose of this section is to confirm the selection based on the first submission, this enables the info to direct the page opened after the entity is chosen-->
@@ -62,35 +62,24 @@
                     <?php if ($_POST["entity"]=="Printer"): ?>
                         <form method='post' action='Printer_Actions/Edit_Printer.php'>
                             <div class ='submit-row'>
-                            <input type="submit" value="Edit">
-                    </form>
-                        <form method='post' action='Printer_Actions/Add_Printer.php'>
-                            <div class ='submit-row'>
-                            <input type="submit" value="Add">
-                    </form>
+                            <input type="submit" value="Confirm">
+                        </form>
                     <?php endif; ?>
                     <!-- Copy End here...-->
 
-                    <?php if ($_POST["entity"]=="Maintenance Log"): ?>
+                    <?php if ($_POST["entity"]=="Maintenance_Log"): ?>
                         <form method='post' action='Printer_Actions/Edit_Maint_Log.php'>
                             <div class ='submit-row'>
-                            <input type="submit" value="Edit">
+                            <input type="submit" value="Confirm">
                         </form>
-                        <!-- <form method='post' action='Printer_Actions/Add_Printer.php'>
-                            <div class ='submit-row'>
-                            <input type="submit" value="Add">
-                        </form> -->
                     <?php endif; ?>
 
-                    <?php if ($_POST["entity"]=="Printer Part"): ?>
+                    <?php if ($_POST["entity"]=="Part"): ?>
                         <form method='post' action='Printer_Actions/Edit_Printer_Part.php'>
                             <div class ='submit-row'>
-                            <input type="submit" value="Edit">
+                            <input type="submit" value="Confirm">
                         </form>
-                        <!-- <form method='post' action='Printer_Actions/Add_Printer.php'>
-                            <div class ='submit-row'>
-                            <input type="submit" value="Add">
-                        </form> -->
+
                     <?php endif; ?>
 
         </div>
