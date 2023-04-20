@@ -24,8 +24,25 @@
             $unit_groups = $results->fetch_all(MYSQLI_BOTH);
         ?>
 
+
         <div class='form-container'>
             <form method='post' action='' target="_self">
+                <div class='row'>
+                    <div class='col-25'>
+                        <label for='printer_name'>Printer Name</label>
+                    </div>
+                    <div class='col-75'>
+                        <select name="printer_name">
+                            <option disabled selected>Select...</option>
+                            <?php
+                                $printer_name = getTable("printer", $conn);
+                                foreach ($printer_name as $pn) {
+                                    printf("<option value=".$pn["printer_ID"].">".$pn["printer_name"]." </option>");
+                                }
+                            ?>
+                        </select>
+                    </div>
+                </div>
 
             <div class='row'>
                     <div class='col-25'>
