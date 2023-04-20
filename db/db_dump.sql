@@ -18,142 +18,6 @@
 --
 -- Current Database: `Mocko_Ex`
 --
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `Mocko_Ex` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `Mocko_Ex`;
-
---
--- Table structure for table `Book`
---
-
-DROP TABLE IF EXISTS `Book`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Book` (
-  `b_id` int(11) NOT NULL AUTO_INCREMENT,
-  `ISBN` int(11) NOT NULL,
-  `Title` varchar(30) NOT NULL,
-  `Revision` int(11) NOT NULL,
-  PRIMARY KEY (`b_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Book`
---
-
-LOCK TABLES `Book` WRITE;
-/*!40000 ALTER TABLE `Book` DISABLE KEYS */;
-INSERT INTO `Book` VALUES (1,111111,'Time',1),(2,222222,'Thermo',1),(3,3333,'TESTING!!!',3);
-/*!40000 ALTER TABLE `Book` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `Course`
---
-
-DROP TABLE IF EXISTS `Course`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Course` (
-  `c_id` int(11) NOT NULL AUTO_INCREMENT,
-  `CourseRubric` varchar(4) NOT NULL,
-  `CourseNumber` int(10) NOT NULL,
-  `CourseName` varchar(45) NOT NULL,
-  PRIMARY KEY (`c_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Course`
---
-
-LOCK TABLES `Course` WRITE;
-/*!40000 ALTER TABLE `Course` DISABLE KEYS */;
-INSERT INTO `Course` VALUES (1,'ME',8930,'Design Informatics'),(2,'ME',8180,'FEA'),(3,'ME',8720,'Optimization'),(4,'ME',8000,'Seminar');
-/*!40000 ALTER TABLE `Course` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `Course_uses_Book`
---
-
-DROP TABLE IF EXISTS `Course_uses_Book`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Course_uses_Book` (
-  `Book_ID` int(11) NOT NULL,
-  `Course_ID` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Course_uses_Book`
---
-
-LOCK TABLES `Course_uses_Book` WRITE;
-/*!40000 ALTER TABLE `Course_uses_Book` DISABLE KEYS */;
-INSERT INTO `Course_uses_Book` VALUES (1,1),(1,3),(2,2),(2,4),(3,1);
-/*!40000 ALTER TABLE `Course_uses_Book` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `Person`
---
-
-DROP TABLE IF EXISTS `Person`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Person` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `FirstName` varchar(30) NOT NULL,
-  `LastName` varchar(30) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Person`
---
-
-LOCK TABLES `Person` WRITE;
-/*!40000 ALTER TABLE `Person` DISABLE KEYS */;
-INSERT INTO `Person` VALUES (1,'Greg','Mocko'),(2,'Hannah','Mocko'),(3,'Barbara','Mocko'),(4,'Erin','Utermarck'),(5,'William','Brown'),(6,'Heather','Brown'),(7,'Jeremy','Mac'),(8,'Chris','Brown');
-/*!40000 ALTER TABLE `Person` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `Person_Takes_Course`
---
-
-DROP TABLE IF EXISTS `Person_Takes_Course`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Person_Takes_Course` (
-  `P_C_ID` int(11) NOT NULL AUTO_INCREMENT,
-  `P_ID` int(11) NOT NULL COMMENT 'key to person',
-  `C_ID` int(11) NOT NULL COMMENT 'key to course',
-  PRIMARY KEY (`P_C_ID`),
-  KEY `P_ID` (`P_ID`,`C_ID`),
-  KEY `Course` (`C_ID`),
-  CONSTRAINT `Course` FOREIGN KEY (`C_ID`) REFERENCES `Course` (`c_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `Person` FOREIGN KEY (`P_ID`) REFERENCES `Person` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Person_Takes_Course`
---
-
-LOCK TABLES `Person_Takes_Course` WRITE;
-/*!40000 ALTER TABLE `Person_Takes_Course` DISABLE KEYS */;
-INSERT INTO `Person_Takes_Course` VALUES (1,1,1),(2,1,2),(3,2,2),(4,2,4),(5,4,1),(6,6,1);
-/*!40000 ALTER TABLE `Person_Takes_Course` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Current Database: `3DPrinterDT`
 --
 
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `3DPrinterDT` /*!40100 DEFAULT CHARACTER SET utf8 */;
@@ -167,7 +31,7 @@ USE `3DPrinterDT`;
 DROP TABLE IF EXISTS `Employee`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Employee` (
+CREATE TABLE IF NOT EXISTS `Employee` (
   `employee_ID` int(11) NOT NULL AUTO_INCREMENT,
   `first_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
@@ -194,7 +58,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Employee_Has_Role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Employee_Has_Role` (
+CREATE TABLE IF NOT EXISTS `Employee_Has_Role` (
   `employe_ID` int(11) NOT NULL,
   `role_ID` int(11) NOT NULL,
   PRIMARY KEY (`employe_ID`,`role_ID`),
@@ -222,7 +86,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Job_Parameter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Job_Parameter` (
+CREATE TABLE IF NOT EXISTS `Job_Parameter` (
   `jobparam_ID` int(11) NOT NULL AUTO_INCREMENT,
   `jobparam_name` varchar(45) DEFAULT NULL,
   `unit` varchar(8) NOT NULL,
@@ -248,7 +112,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Maintenance_Log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Maintenance_Log` (
+CREATE TABLE IF NOT EXISTS `Maintenance_Log` (
   `mlog_ID` int(11) NOT NULL AUTO_INCREMENT,
   `employee_ID` int(11) NOT NULL,
   `timestamp` datetime DEFAULT NULL,
@@ -275,7 +139,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Material`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Material` (
+CREATE TABLE IF NOT EXISTS `Material` (
   `mat_ID` int(11) NOT NULL AUTO_INCREMENT,
   `melt_temp` decimal(4,0) DEFAULT NULL,
   `mat_name` varchar(45) DEFAULT NULL,
@@ -304,7 +168,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Material_Loaded_In_Printer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Material_Loaded_In_Printer` (
+CREATE TABLE IF NOT EXISTS `Material_Loaded_In_Printer` (
   `printer_ID` int(11) NOT NULL,
   `mat_ID` int(11) NOT NULL,
   `timestamp` datetime NOT NULL,
@@ -334,7 +198,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Parameter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Parameter` (
+CREATE TABLE IF NOT EXISTS `Parameter` (
   `param_ID` int(11) NOT NULL AUTO_INCREMENT,
   `param_name` varchar(60) NOT NULL,
   `unit` varchar(8) NOT NULL,
@@ -360,7 +224,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Part`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Part` (
+CREATE TABLE IF NOT EXISTS `Part` (
   `part_ID` int(11) NOT NULL AUTO_INCREMENT,
   `part_name` varchar(60) DEFAULT NULL,
   `vendor_ID` int(11) NOT NULL DEFAULT '-1',
@@ -390,7 +254,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Part_Has_Maintenance_Log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Part_Has_Maintenance_Log` (
+CREATE TABLE IF NOT EXISTS `Part_Has_Maintenance_Log` (
   `part_ID` int(11) NOT NULL,
   `mlog_ID` int(11) NOT NULL,
   PRIMARY KEY (`part_ID`,`mlog_ID`),
@@ -417,7 +281,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Part_Parameters`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Part_Parameters` (
+CREATE TABLE IF NOT EXISTS `Part_Parameters` (
   `param_ID` int(11) NOT NULL,
   `part_ID` int(11) NOT NULL,
   `value` decimal(8,0) DEFAULT NULL,
@@ -445,7 +309,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Print_Job`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Print_Job` (
+CREATE TABLE IF NOT EXISTS `Print_Job` (
   `job_ID` int(11) NOT NULL AUTO_INCREMENT,
   `model` blob,
   `code` blob,
@@ -491,7 +355,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Print_Job_Has_Job_Parameter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Print_Job_Has_Job_Parameter` (
+CREATE TABLE IF NOT EXISTS `Print_Job_Has_Job_Parameter` (
   `job_ID` int(11) NOT NULL,
   `jobparam_ID` int(11) NOT NULL,
   `value` decimal(8,0) DEFAULT NULL,
@@ -519,7 +383,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Printer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Printer` (
+CREATE TABLE IF NOT EXISTS `Printer` (
   `printer_ID` int(11) NOT NULL AUTO_INCREMENT,
   `location` varchar(45) DEFAULT NULL,
   `IPv6` varchar(25) DEFAULT NULL,
@@ -550,7 +414,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Printer_Can_Print_Material`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Printer_Can_Print_Material` (
+CREATE TABLE IF NOT EXISTS `Printer_Can_Print_Material` (
   `printer_ID` int(11) NOT NULL,
   `mat_ID` int(11) NOT NULL,
   PRIMARY KEY (`printer_ID`,`mat_ID`),
@@ -578,7 +442,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Printer_State`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Printer_State` (
+CREATE TABLE IF NOT EXISTS `Printer_State` (
   `printer_ID` int(11) NOT NULL,
   `timestamp` datetime NOT NULL,
   `is_connected` tinyint(4) DEFAULT '1',
@@ -609,7 +473,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Role` (
+CREATE TABLE IF NOT EXISTS `Role` (
   `role_ID` int(11) NOT NULL AUTO_INCREMENT,
   `role_name` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`role_ID`)
@@ -633,7 +497,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Sensor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Sensor` (
+CREATE TABLE IF NOT EXISTS `Sensor` (
   `sensor_ID` int(11) NOT NULL AUTO_INCREMENT,
   `sensor_name` varchar(45) NOT NULL,
   `part_ID` int(11) NOT NULL DEFAULT '-1',
@@ -660,7 +524,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Sensor_Data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Sensor_Data` (
+CREATE TABLE IF NOT EXISTS `Sensor_Data` (
   `data_ID` int(11) NOT NULL,
   `timestamp` datetime NOT NULL,
   `data_name` varchar(45) DEFAULT NULL,
@@ -689,7 +553,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Unit`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Unit` (
+CREATE TABLE IF NOT EXISTS `Unit` (
   `unit_name` varchar(8) NOT NULL,
   `unit_group` varchar(45) DEFAULT NULL,
   `is_main` tinyint(4) DEFAULT '0',
@@ -714,7 +578,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `Vendor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `Vendor` (
+CREATE TABLE IF NOT EXISTS `Vendor` (
   `vendor_ID` int(11) NOT NULL AUTO_INCREMENT,
   `vendor_name` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`vendor_ID`)
