@@ -20,16 +20,22 @@
 
             // Get printer variables for conditional drop down values (passed to JS function)
             $query = "SELECT Printer.printer_ID, printer_name, model, mat_ID
-                FROM Printer, Printer_State, Material_Loaded_In_Printer
-                WHERE Printer_State.printer_ID = Printer.printer_ID
-                AND Printer_State.printer_ID = Material_Loaded_In_Printer.printer_ID
-                AND Printer_State.is_available = 1;";
+                    FROM Printer, Printer_State, Material_Loaded_In_Printer
+                    WHERE Printer_State.printer_ID = Printer.printer_ID
+                    AND Printer_State.printer_ID = Material_Loaded_In_Printer.printer_ID
+                    AND Printer_State.timestamp = (
+                        SELECT max(Printer_State.timestamp)
+                        FROM Printer_State
+                        WHERE Printer_State.printer_ID = Printer.printer_ID);";
             $result = $conn->query($query);
             $all_printer_mats = $result->fetch_all(MYSQLI_BOTH);
-            $query = "SELECT Printer.printer_ID, printer_name, model 
-                FROM Printer, Printer_State
-                WHERE Printer_State.printer_ID = Printer.printer_ID
-                AND Printer_State.is_available = 1;";
+            $query =  "SELECT Printer.printer_ID, printer_name, model 
+                    FROM Printer, Printer_State
+                    WHERE Printer_State.printer_ID = Printer.printer_ID
+                    AND Printer_State.timestamp = (
+                        SELECT max(Printer_State.timestamp)
+                        FROM 3DPrinterDT.Printer_State
+                        WHERE Printer_State.printer_ID = Printer.printer_ID);";
             $result = $conn->query($query);
             $all_printers = $result->fetch_all(MYSQLI_BOTH);
         ?>
@@ -100,22 +106,19 @@
         </div>
 
         <?php
-            // Receive the submitted form
-            if (isset($_POST["designer"])) {
-                $designer = $_POST["designer"];
-                printf("Designer is: $designer");
-            }
-            if (isset($_POST["material"])) {
-                $mat = $_POST["material"];
-                printf("Material is: $mat");
-            }
-            if (isset($_POST["printer"])) {
-                $printer = $_POST["printer"];
-                printf("Printer is: $mat");
-            }
-
-
-            // TODO: Handle submitted form
+            // // Receive the submitted form
+            // if (isset($_POST["designer"])) {
+            //     $designer = $_POST["designer"];
+            //     printf("Designer is: $designer");
+            // }
+            // if (isset($_POST["material"])) {
+            //     $mat = $_POST["material"];
+            //     printf("Material is: $mat");
+            // }
+            // if (isset($_POST["printer"])) {
+            //     $printer = $_POST["printer"];
+            //     printf("Printer is: $mat");
+            // }
 
             $conn->close();
         ?>

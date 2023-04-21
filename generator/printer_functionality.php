@@ -9,8 +9,13 @@ include_once ("../php/SQL_functions.php");
  * @param mysqli $conn Connection to the DB
  */
 function addToQueue(string $job_id, mysqli $conn) {
+    // Check if job is already in queue:
+    $start_time = getValues("Print_Job", "print_start_time", "job_ID", $job_id, $conn)[0][0];
+    if (!is_null($start_time) && $start_time != "NULL") {return;}
+    // Submit to queue
     $update_cols = array("submission_time", "in_queue");
-    $update_vals = array(new DateTime("now", new DateTimeZone('America/New_York')), "1");
+    $date = new DateTime("now", new DateTimeZone("America/New_York"));
+    $update_vals = array($date->format("Y-m-d H:i:s"), "1");
     $query = makeUpdateQuery("Print_Job", $update_cols, $update_vals, 
                     array("job_id"), array($job_id));
     $conn->query($query);
@@ -27,30 +32,40 @@ function addToQueue(string $job_id, mysqli $conn) {
  * @param mysqli $conn Connection to the DB
  */
 function processQueue(mysqli $conn) {
-    mysqli_refresh($conn, MYSQLI_REFRESH_TABLES);
     $printers = getTable("Printer", $conn);
     foreach ($printers as $printer) {
-        $jobs_finished = True;
         $printer_id = $printer['printer_ID'];
+        updateStatus($printer_id, $conn);
         if (isPrinting($printer_id, $conn)) {
             $jobs = getCurrentPrintJob($printer_id, $conn);
             foreach ($jobs as $job) {
                 if (isJobFinished($job)) {
                     completeJob($printer_id, $job['job_ID'], $conn);
                 }
-                else {
-                    $jobs_finished = False;
-                    setPrinterStatus($printer_id, "BUSY", $conn);
-                }
             }
         }
-        if ($jobs_finished) {
+        if (!isPrinting($printer_id, $conn)) {
             $queue = getPrinterQueue($printer_id, $conn);
             if (count($queue) != 0) {
                 printNextJob($printer_id, $queue, $conn);
             }
         }
+        updateStatus($printer_id, $conn);
     }
+}
+
+/**
+ * Updates the printer status based off of whether the printer is printing or not
+ * 
+ * @param string $printer_id PK for the Printer to print with
+ * @param mysqli $conn Connection to the DB
+ */
+function updateStatus($printer_id, $conn) {
+    $status = "ERROR";
+    if (isPrinting($printer_id, $conn)) {$status = "BUSY";}
+    else {$status = "AVAILABLE";}
+    setPrinterStatus($printer_id, $status, $conn);
+    // printf("<br>Set Printer $printer_id Status to $status");
 }
 
 /**
@@ -61,10 +76,7 @@ function processQueue(mysqli $conn) {
  * @param mysqli $conn Connection to the DB
  */
 function printNextJob(string $printer_id, array $queue, mysqli $conn) {
-    if (getPrinterStatus($printer_id, $conn) != "AVAILABLE" ||
-        isPrinting($printer_id, $conn)) {
-            return;
-        }
+    if (getPrinterStatus($printer_id, $conn) != "AVAILABLE") {return;}
     $job_id = $queue[0]['job_ID'];
     $update_cols = array("print_start_time", "in_queue");
     $date = new DateTime("now", new DateTimeZone("America/New_York"));
@@ -72,7 +84,7 @@ function printNextJob(string $printer_id, array $queue, mysqli $conn) {
     $query = makeUpdateQuery("Print_Job", $update_cols, $update_vals, 
                     array("job_id"), array($job_id));
     $conn->query($query);
-    setPrinterStatus($printer_id, "BUSY", $conn);
+    updateStatus($printer_id, $conn);
 }
 
 /**
@@ -91,7 +103,7 @@ function completeJob(string $printer_id, string $job_id, mysqli $conn, int $prin
     $query = makeUpdateQuery("Print_Job", $update_cols, $update_vals, 
                     array("job_id"), array($job_id));
     $conn->query($query);
-    setPrinterStatus($printer_id, "AVAILABLE", $conn);
+    updateStatus($printer_id, $conn);
 }
 
 /**
@@ -117,6 +129,7 @@ function isJobFinished(array $job) {
  */
 function isPrinting(string $printer_id, mysqli $conn) {
     $current_jobs = getCurrentPrintJob($printer_id, $conn);
+    // printf("<br>Jobs for Printer $printer_id".var_dump($current_jobs));
     if (count($current_jobs) == 0) {return False;}
     else {return True;}
 }
@@ -126,14 +139,6 @@ function isPrinting(string $printer_id, mysqli $conn) {
  * @return DateInterval the time duration
  */
 function getRandomTimeDuration(): DateInterval {
-    return DateInterval::createFromDateString("15 seconds");
+    return DateInterval::createFromDateString("3 minutes");
 }
-
-
-
-
-
-
-
-
 ?>

@@ -22,11 +22,12 @@
             printf("<h1> Add New $table_name </h1>");
             
             $attributes = getColumnLabels($table_name, $conn);
+            $data_types = getDataTypes($table_name, $conn);
             if (tableHasAutoIncrementingID($table_name, $conn)) {
                 // Remove auto-incrementing PK if applicable
                 $attributes = array_slice($attributes, 1);
+                $data_types = array_slice($data_types, 1);
             }
-            $data_types = getDataTypes($table_name, $conn);
             $fks = getForeignKeysInTable($table_name, $conn);
 
             /**

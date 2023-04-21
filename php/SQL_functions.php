@@ -185,7 +185,8 @@ function getForeignKeysInTable(string $table_name, mysqli $conn, string $databas
 function getPrinterStatus(int $printer_id, mysqli $conn) {
     $query = "SELECT is_connected, is_busy, is_available, needs_service, has_error
         FROM 3DPrinterDT.Printer_State
-        WHERE timestamp = (
+        WHERE Printer_State.printer_ID = $printer_id
+        AND timestamp = (
             SELECT max(timestamp)
             FROM 3DPrinterDT.Printer_State
             WHERE printer_ID = $printer_id);";
@@ -257,7 +258,6 @@ function setPrinterStatus(int $printer_id, string $new_status, mysqli $conn) {
     $insert_cols = array("printer_ID", "timestamp", "is_available", "is_connected", "is_busy", "needs_service", "has_error");
     $insert_vals = array($printer_id, $date_string, $is_available, $is_connected, $is_busy, $needs_service, $has_error);
     $query = makeInsertQuery("Printer_State", $insert_cols, array($insert_vals));
-    printf("<br>    ".$query);
     $conn->query($query);
 }
 
@@ -299,9 +299,8 @@ function insertEntity(array $ent_array, string $table_name, mysqli $conn) {
         }
     }
     $query = makeInsertQuery($table_name, $ent_array[0]->getNonKeyColumns(), $insert_ent);
-    // Debugging: 
-    // printf("<br>");
-    // printf("$table_name: $query");
+    // // Debugging: 
+    // printf("<br>$table_name: $query");
     $conn->query($query);
     setPK($ent_array, $table_name, $conn);
 }
@@ -351,14 +350,16 @@ function getPrinterQueue(string $printer_ID, mysqli $conn) {
 function getCurrentPrintJob(string $printer_ID, mysqli $conn) {
     $query = "SELECT * FROM Print_Job
             WHERE Print_Job.printer_ID = $printer_ID
-            AND Print_Job.in_queue = 0
             AND (Print_Job.print_start_time IS NOT NULL
-            OR Print_Job.print_start_time <> '')
+                OR Print_Job.print_start_time <> \"\")
+            AND Print_Job.in_queue = 0
             AND Print_Job.print_start_time < now()
             AND (Print_Job.print_finish_time IS NULL 
-            OR Print_Job.print_finish_time = '');";
+                OR Print_Job.print_finish_time = \"\");";
     $results = $conn->query($query);
     $jobs = $results->fetch_all(MYSQLI_BOTH);
+    // printf("<br>$query<br>");
+    // printf("<br><br>Jobs for Printer $printer_ID".var_dump($jobs));
     return $jobs;
 }
 

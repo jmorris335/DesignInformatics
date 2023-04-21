@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>3D Printers Overview</title>
+        <title>Printers Overview</title>
         <link rel="stylesheet" href="../web/css/styles.css">
         <script src="../web/js/app.js"></script>
     </head>
@@ -19,7 +19,15 @@
 
             $conn = connectToServer(to_print: false);
             $conn->query("USE 3DPrinterDT;");
-            // processQueue($conn);
+
+            //Handle submitted parts
+            if (isset($_POST['job_id'])) {
+                $job_id = $_POST['job_id'];
+                addToQueue($job_id, $conn);
+            }
+
+            processQueue($conn);
+            $conn->refresh(MYSQLI_REFRESH_TABLES);
             $printers = getTable("Printer", $conn);
 
             printf("<style>
@@ -52,7 +60,7 @@
                 $queue_length = count(getPrinterQueue($id, $conn));
 
                 printf("\n\t<td>\n\t<h3>$model</h3>\n\tLocation: $location\n\t<br>");
-                $color = "yellow";
+                $color = "orange";
                 if ($status === "ERROR") {$color = "red";}
                 elseif ($status === "AVAILABLE") {$color = "green";}
                 printf("\n\tStatus: <b style=\"color:$color;\"> $status </b>");
@@ -68,8 +76,6 @@
                     </form>
                 </td>");
             }
-
-            $conn->close();
         ?>
 
         <iframe class="queue_frame" id="queue_box" name="queue_box" src="queue_frame.php"> </iframe> 
@@ -83,12 +89,7 @@
         </script>
 
         <?php
-        //Handle submitted parts
-            if (isset($_POST['job_id'])) {
-                $job_id = $_POST['job_id'];
-                printf("Received Print Job, ID=$job_id");
-            }
-
+            $conn->close();
         ?>
 
         <br>

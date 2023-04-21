@@ -27,7 +27,7 @@
             include_once ("../generator/classes/print_job.php");
             include_once ("../generator/classes/job_parameter.php");
 
-            if (isset($_POST["designer"]) && $_POST["material"] && $_POST["printer"]) {
+            if (isset($_POST["designer"]) && isset($_POST["material"]) && isset($_POST["printer"])) {
                 // On first page access create a new print job (if redirected from submit_job.php)
                 $job = new PrintJob($_POST["designer"], $_POST["printer"], $_POST["material"],
                                     $_POST["stl_file"], $_POST["gcode_file"]);
