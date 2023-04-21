@@ -104,11 +104,7 @@ function isJobFinished(array $job) {
     if (!isset($job['print_start_time']) || is_null($job['print_start_time'])) {return False;}
     $rand_finish_time = new DateTimeImmutable($job['print_start_time'], new DateTimeZone("America/New_York"));
     $rand_finish_time = $rand_finish_time->add(getRandomTimeDuration());
-    printf(var_dump($rand_finish_time));
     $now = new DateTimeImmutable("now", new DateTimeZone("America/New_York"));
-    printf(var_dump($now));
-    $temp = ($now >= $rand_finish_time);
-    printf("<br> --  The time is ".var_dump($temp));
     return ($now >= $rand_finish_time);
 }
 
