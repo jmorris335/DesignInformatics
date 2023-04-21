@@ -25,11 +25,14 @@
 
         $queue = getPrinterQueue($printer_ID, $conn);
         $data = formatQueue($queue, $conn);
-        $columns = array_keys($data[0]);
-    ?>
-
-    <?php
-        printf("<h3> Printer $printer_ID Queue </h3>");
+        if (empty($data)) {
+            printf("Queue is empty");
+            $columns = array();
+        }
+        else {
+            printf("<h3> Printer $printer_ID Queue </h3>");
+            $columns = array_keys($data[0]);
+        }
 
         printf("<table>");
         for ($i = 0; $i < count($columns); $i++) {

@@ -79,6 +79,9 @@
                 else if ($data_type == "tinyint") {
                     $input_type = "type='number' min='0' max='1', step='1'";
                 }
+                else if ($data_type == "blob") {
+                    $input_type = "type='file'";
+                }
                 else {
                     $input_type = "type='text'";
                 }

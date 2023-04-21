@@ -59,7 +59,7 @@ function makeUpdateQuery(string $table_name, array $set_columns, array $set_valu
     for ($i = 0; $i < min(array(count($set_columns), count($set_values))); $i++) {
         $set_str = $set_str.$set_columns[$i]." = \"".$set_values[$i]."\"";
         if ($i != count($set_columns) - 1) {
-            $set_str = $set_str." AND ";
+            $set_str = $set_str.", ";
         }
     }
     $where_str = "";
@@ -222,41 +222,42 @@ function getPrinterStatus(int $printer_id, mysqli $conn) {
  * @param mysqli $conn Connection to the db
  */
 function setPrinterStatus(int $printer_id, string $new_status, mysqli $conn) {
-    $has_error = false;
-        $new_status = strtolower($new_status);
-        if ($new_status === "not connected") {
-            $is_connected = false;
-            $is_available = false;
+    $has_error = 0;
+    $is_connected = 0;
+    $is_available = 0;
+    $is_busy = 0;
+    $needs_service = 0;
+    $new_status = strtolower($new_status);
+    if ($new_status != "not connected") {
+        $is_connected = 1;
+        if($new_status === "available") {
+            $is_available = 1;
+            $is_busy = 0;
+            $needs_service = 0;
         }
         else {
-            $is_connected = true;
-            if($new_status === "available") {
-                $is_available = true;
-                $is_busy = false;
-                $needs_service = false;
+            $is_available = 0;
+            if($new_status === "busy") {
+                $is_busy = 1;
+                $needs_service = 0;
             }
             else {
-                $is_available = false;
-                if($new_status === "busy") {
-                    $is_busy = true;
-                    $needs_service = false;
+                $is_busy = 0;
+                if($new_status === "needs service") {
+                    $needs_service = 1;
                 }
                 else {
-                    $is_busy = false;
-                    if($new_status === "needs service") {
-                        $needs_service = true;
-                    }
-                    else {
-                        $has_error = true;
-                    }
+                    $has_error = 1;
                 }
             }
         }
-    $date = new DateTime("now");
-    $date_string = $date->format("Ymd");
+    }
+    $date = new DateTime("now", new DateTimeZone("America/New_York"));
+    $date_string = $date->format("Y-m-d H:i:s");
     $insert_cols = array("printer_ID", "timestamp", "is_available", "is_connected", "is_busy", "needs_service", "has_error");
     $insert_vals = array($printer_id, $date_string, $is_available, $is_connected, $is_busy, $needs_service, $has_error);
-    $query = makeInsertQuery("Printer_State", $insert_cols, $insert_vals);
+    $query = makeInsertQuery("Printer_State", $insert_cols, array($insert_vals));
+    printf("<br>    ".$query);
     $conn->query($query);
 }
 
@@ -355,8 +356,7 @@ function getCurrentPrintJob(string $printer_ID, mysqli $conn) {
             OR Print_Job.print_start_time <> '')
             AND Print_Job.print_start_time < now()
             AND (Print_Job.print_finish_time IS NULL 
-            OR Print_Job.print_finish_time = ''
-            OR Print_Job.print_finish_time > now());";
+            OR Print_Job.print_finish_time = '');";
     $results = $conn->query($query);
     $jobs = $results->fetch_all(MYSQLI_BOTH);
     return $jobs;
@@ -369,7 +369,7 @@ function getCurrentPrintJob(string $printer_ID, mysqli $conn) {
  */
 function formatTimestamp(string $timestamp) {
     $time = strtotime($timestamp);
-    return date("M d, y g:i A", $time);
+    return date("M d, Y g:i A", $time);
 }
 
 /**

@@ -2,11 +2,6 @@
 include_once ("../php/functions.php");
 include_once ("../php/SQL_functions.php");
 
-//TESTING
-$conn = connectToServer(to_print: False);
-$conn->query("USE 3DPrinterDT;");
-processQueue($conn);
-
 /**
  * Put submission time as current time and place job in queue
  * 
@@ -15,7 +10,7 @@ processQueue($conn);
  */
 function addToQueue(string $job_id, mysqli $conn) {
     $update_cols = array("submission_time", "in_queue");
-    $update_vals = array(new DateTime("now"), "1");
+    $update_vals = array(new DateTime("now", new DateTimeZone('America/New_York')), "1");
     $query = makeUpdateQuery("Print_Job", $update_cols, $update_vals, 
                     array("job_id"), array($job_id));
     $conn->query($query);
@@ -32,25 +27,26 @@ function addToQueue(string $job_id, mysqli $conn) {
  * @param mysqli $conn Connection to the DB
  */
 function processQueue(mysqli $conn) {
+    mysqli_refresh($conn, MYSQLI_REFRESH_TABLES);
     $printers = getTable("Printer", $conn);
-    $jobs_finished = True;
     foreach ($printers as $printer) {
+        $jobs_finished = True;
         $printer_id = $printer['printer_ID'];
         if (isPrinting($printer_id, $conn)) {
             $jobs = getCurrentPrintJob($printer_id, $conn);
-            print_r($jobs);
             foreach ($jobs as $job) {
                 if (isJobFinished($job)) {
                     completeJob($printer_id, $job['job_ID'], $conn);
                 }
                 else {
                     $jobs_finished = False;
+                    setPrinterStatus($printer_id, "BUSY", $conn);
                 }
             }
         }
         if ($jobs_finished) {
             $queue = getPrinterQueue($printer_id, $conn);
-            if (!empty($queue)) {
+            if (count($queue) != 0) {
                 printNextJob($printer_id, $queue, $conn);
             }
         }
@@ -65,11 +61,14 @@ function processQueue(mysqli $conn) {
  * @param mysqli $conn Connection to the DB
  */
 function printNextJob(string $printer_id, array $queue, mysqli $conn) {
-    if (isPrinting($printer_id, $conn)) {return;}
+    if (getPrinterStatus($printer_id, $conn) != "AVAILABLE" ||
+        isPrinting($printer_id, $conn)) {
+            return;
+        }
     $job_id = $queue[0]['job_ID'];
     $update_cols = array("print_start_time", "in_queue");
-    $date = new DateTime("now");
-    $update_vals = array($date->format("Ymd"), "0");
+    $date = new DateTime("now", new DateTimeZone("America/New_York"));
+    $update_vals = array($date->format("Y-m-d H:i:s"), "0");
     $query = makeUpdateQuery("Print_Job", $update_cols, $update_vals, 
                     array("job_id"), array($job_id));
     $conn->query($query);
@@ -86,7 +85,9 @@ function printNextJob(string $printer_id, array $queue, mysqli $conn) {
 function completeJob(string $printer_id, string $job_id, mysqli $conn, int $printer_success_rate = 90) {
     $job_succeeded = rand(0, 100) < $printer_success_rate;
     $update_cols = array("print_finish_time", "job_succeeded", "in_queue");
-    $update_vals = array(new DateTime("now"),$job_succeeded, "0");
+    $now_datetime = new DateTime("now", new DateTimeZone('America/New_York'));
+    $now_string = $now_datetime->format("Y-m-d H:i:s");
+    $update_vals = array($now_string, $job_succeeded, "0");
     $query = makeUpdateQuery("Print_Job", $update_cols, $update_vals, 
                     array("job_id"), array($job_id));
     $conn->query($query);
@@ -101,9 +102,14 @@ function completeJob(string $printer_id, string $job_id, mysqli $conn, int $prin
  */
 function isJobFinished(array $job) {
     if (!isset($job['print_start_time']) || is_null($job['print_start_time'])) {return False;}
-    $rand_finish_time = new DateTimeImmutable($job['print_start_time']);
+    $rand_finish_time = new DateTimeImmutable($job['print_start_time'], new DateTimeZone("America/New_York"));
     $rand_finish_time = $rand_finish_time->add(getRandomTimeDuration());
-    return (new DateTimeImmutable("now") >= $rand_finish_time);
+    printf(var_dump($rand_finish_time));
+    $now = new DateTimeImmutable("now", new DateTimeZone("America/New_York"));
+    printf(var_dump($now));
+    $temp = ($now >= $rand_finish_time);
+    printf("<br> --  The time is ".var_dump($temp));
+    return ($now >= $rand_finish_time);
 }
 
 /**
@@ -114,9 +120,8 @@ function isJobFinished(array $job) {
  * @return bool False if the printer is not currently printing a job
  */
 function isPrinting(string $printer_id, mysqli $conn) {
-    if (getPrinterStatus($printer_id, $conn) != "BUSY") {return False;}
     $current_jobs = getCurrentPrintJob($printer_id, $conn);
-    if (empty($current_jobs)) {return False;}
+    if (count($current_jobs) == 0) {return False;}
     else {return True;}
 }
 
