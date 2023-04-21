@@ -18,8 +18,14 @@
 
             if (isset($_POST['entity'])) {$table_name = $_POST['entity'];}
             else {$table_name = "Printer";}
+
+            printf("<h1> Add New $table_name </h1>");
             
             $attributes = getColumnLabels($table_name, $conn);
+            if (tableHasAutoIncrementingID($table_name, $conn)) {
+                // Remove auto-incrementing PK if applicable
+                $attributes = array_slice($attributes, 1);
+            }
             $data_types = getDataTypes($table_name, $conn);
             $fks = getForeignKeysInTable($table_name, $conn);
 
@@ -42,7 +48,7 @@
                 printf("
                     <div class='row'>
                         <div class='col-25'>
-                            <label for='$attribute_name'>Select $attribute_name</label>
+                            <label for='$attribute_name'>Select ".ucfirst($attribute_name)."</label>
                         </div>
                         <div class='col-75'>
                             <select id='$attribute_name' name='$attribute_name'>
@@ -79,7 +85,7 @@
                 printf("
                     <div class='row'>
                         <div class='col-25'>
-                            <label for='$attribute_name'>Set $attribute_name ($data_type)</label>
+                            <label for='$attribute_name'>Set ".ucfirst($attribute_name)." ($data_type)</label>
                         </div>
                         <div class='col-75'>
                             <input $input_type id='$attribute_name' name='$attribute_name'>
@@ -92,6 +98,8 @@
         <div class='form-container'>
             <form method='post' action='' target='_self'>
                 <?php
+                    printf("
+                    <input type=\"hidden\" name=\"entity\" id=\"entity\" value=\"$table_name\">");
                     for ($i = 0; $i < count($attributes); $i++) {
                         if (in_array($attributes[$i], array_column($fks, 'COLUMN_NAME'))) {
                             $values = getForeignKeyValues($fks, $attributes[$i], $conn);

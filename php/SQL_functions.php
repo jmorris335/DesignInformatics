@@ -371,4 +371,25 @@ function formatTimestamp(string $timestamp) {
     $time = strtotime($timestamp);
     return date("M d, y g:i A", $time);
 }
+
+/**
+ * Returns true if the table has an autoincrementing column, such as Printer.
+ * Returns false if the table has non-incrementing column or foreign key, such as Unit or Part_Parameter
+ * 
+ * @param string $table_name Name of the table to check
+ * @param mysqli $conn Connection to the database
+ * @return bool
+ */
+function tableHasAutoIncrementingID(string $table_name, mysqli $conn) {
+    $query = "SELECT COLUMN_NAME
+              FROM INFORMATION_SCHEMA.COLUMNS
+              WHERE TABLE_NAME = '$table_name'
+              AND DATA_TYPE = 'int'
+              AND COLUMN_DEFAULT IS NULL
+              AND IS_NULLABLE = 'NO'
+              AND EXTRA like '%%auto_increment%%';";
+    $results = $conn->query($query);
+    $result = $results->fetch_all(MYSQLI_BOTH);
+    return (count($result) != 0);
+}
 ?>

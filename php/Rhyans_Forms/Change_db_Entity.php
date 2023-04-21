@@ -25,14 +25,14 @@
             <form method='post' action='' target='_self'>
                 <div class='row'>
                     <div class='col-25'>
-                        <label for='entity'>Select the Entity to Edit</label>
+                        <label for='entity'>Select the Entity to Manage</label>
                         </div>
                         <div class='col-75'>
                             <select id='entity' name='entity'>
                                 <option value="" disabled selected>Select...</option>
                                 <option value="Printer">Printer</option> 
                                 <option value="Part">Printer Part</option>
-                                <option value="Part_Paramters">Part Parameters</option>
+                                <option value="Part_Parameters">Part Parameters</option>
                                 <option value="Material">Printer Material</option>
                                 <option value="Material_Loaded_In_Printer">Loaded Materials</option> 
                                 <option value="Sensor">Part Sensor</option>
@@ -45,45 +45,13 @@
                         </div>
                         </div>
                         <div class ='submit-row'>
-                        <input type="submit" value="Add Entity" formaction="../add.php">
                         <input type="submit" value="Edit/View Entity" formaction="../view_entities.php">
+                        <input type="submit" value="Add Entity" formaction="../add.php">
                         <input type="reset" value="Reset">
                 </div>
-                </form>
-                <?php
-                // This statement receives infromation from the dropdown, and restates it to confirm to the user while creating the variable $Entity
-                    if (isset($_POST["entity"])) {
-                        $Entity = $_POST["entity"];
-                        printf("Entity Selected is: $Entity<br> Please Confirm");
-                    } ?>
-
-                    <!-- The prupose of this section is to confirm the selection based on the first submission, this enables the info to direct the page opened after the entity is chosen-->
-                    <!-- Copy Start here for connecting to new page...-->
-                    <?php if ($_POST["entity"]=="Printer"): ?>
-                        <form method='post' action='Printer_Actions/Edit_Printer.php'>
-                            <div class ='submit-row'>
-                            <input type="submit" value="Confirm">
-                        </form>
-                    <?php endif; ?>
-                    <!-- Copy End here...-->
-
-                    <?php if ($_POST["entity"]=="Maintenance_Log"): ?>
-                        <form method='post' action='Printer_Actions/Edit_Maint_Log.php'>
-                            <div class ='submit-row'>
-                            <input type="submit" value="Confirm">
-                        </form>
-                    <?php endif; ?>
-
-                    <?php if ($_POST["entity"]=="Part"): ?>
-                        <form method='post' action='Printer_Actions/Edit_Printer_Part.php'>
-                            <div class ='submit-row'>
-                            <input type="submit" value="Confirm">
-                        </form>
-
-                    <?php endif; ?>
-
+            </form>
         </div>
-        <!-- connect form to if statement to open new formn for editing the database -->
+
         <p> Design Informatics, (c) 2023 </p>
     </body>
 </html>

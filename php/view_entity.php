@@ -31,6 +31,7 @@
             $data_types = getDataTypes($table_name, $conn);
             $fks = getForeignKeysInTable($table_name, $conn);
             $fk_attributes = array();
+
             foreach ($attributes as $attribute) {
                 $fk_values[$attribute] = getForeignKeyValues($fks, $attribute, $conn);
                 if (in_array($attribute, array_column($fks, 'COLUMN_NAME'))) {
@@ -56,15 +57,16 @@
             }
 
             /**
-             * Prints the default label for each attribute with an edit button
+             * Prints the default label for each attribute with an edit button (if $can_edit is True)
              */
-            function printAttributeLabel(string $attribute_name, mixed $value) {
+            function printAttributeLabel(string $attribute_name,  mixed $value, bool $can_edit= True) {
                 if (gettype($value) != "string") {$value = "N/A";}
                 printf("
                     <div class='row' id='$attribute_name' name='$attribute_name'>
-                        <div class='col-25' style='display:flex; flex-direction: row;'>
-                            <button class='button_link' onClick=\"editRow('$attribute_name')\"> Edit </button>
-                            <label for='$attribute_name' style='padding-left: 15px'>$attribute_name</label>
+                        <div class='col-25' style='display:flex; flex-direction: row;'>");
+                if ($can_edit) {printf("<button class='button_link' onClick=\"editRow('$attribute_name')\"> Edit </button>");}
+                printf("
+                            <label for='$attribute_name' style='padding-left: 15px'>".ucfirst($attribute_name)."</label>
                         </div>
                         <div class='col-75' style='padding-top: 10px;'>
                             <div>$value</div>
@@ -80,8 +82,14 @@
                     printf("
                     <input type=\"hidden\" name=\"entity\" id=\"entity\" value=\"$table_name\">
                     <input type=\"hidden\" name=\"entity_ID\" id=\"entity_ID\" value=\"$entity_id\">");
-                    for ($i = 1; $i < count($attributes); $i++) {
-                        printAttributeLabel($attributes[$i], $values[$i]);
+                    for ($i = 0; $i < count($attributes); $i++) {
+                        $can_edit = True;
+                        if ($i == 0) {
+                            if (tableHasAutoIncrementingID($table_name, $conn)) {
+                                $can_edit = False;
+                            }
+                        }
+                        printAttributeLabel($attributes[$i], $values[$i], $can_edit,);
                     }
                 ?>
                 <div class ='submit-row'>

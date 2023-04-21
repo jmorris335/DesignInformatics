@@ -24,7 +24,7 @@ label {
     padding: 12px 12px 12px 0;
     display: inline-block;
 }
-input[type=text], input[type=number], select, textarea {
+input[type=text], input[type=number], input[type=datetime-local], select, textarea {
     box-sizing: content-box;
     width: 95%;
     padding: 12px;
