@@ -51,14 +51,6 @@
             AND printer.vendor_ID = vendor.vendor_ID
             ;";
 
-            
-
-            $sql_state = "SELECT printer_state.is_connected, printer_state.is_busy, 
-            printer_state.needs_service, printer_state.has_error, printer_state.is_available
-            FROM printer_state
-            WHERE printer_state.printer_ID = ".$printer."
-            ;";
-
             $sql_material = "SELECT Material.mat_name, Material.color, Vendor.vendor_name, 
             Material_Loaded_In_Printer.volume
             FROM Material_Loaded_In_Printer, Material, Vendor
@@ -68,13 +60,10 @@
             ;";
 
 
-            $results = $conn->query($sql_state);
-            $status_results = $results->fetch_all(MYSQLI_BOTH);
-            if ($status_results[0] == 0) {$color = 'Red'; $status = 'Disconnected';}
-            elseif ($status_results[1] == 1) {$color = 'Yellow'; $status = 'Busy';}
-            elseif ($status_results[2] == 1) {$color = 'Red'; $status = 'Needs Service';}
-            elseif ($status_results[3] == 1) {$color = 'Red'; $status = 'Printer Error';}
-            else {$color = 'Green'; $status = 'Available';}
+            $status = getPrinterStatus($printer, $conn);
+            $color = "orange";
+            if ($status === "ERROR") {$color = "red";}
+            elseif ($status === "AVAILABLE") {$color = "green";}
             printf("<h3>Status: <b style=\"color:$color;\"> $status </b></h3>");
 
             //Print Job Table
@@ -90,8 +79,10 @@
             $cols = array("Model", "Printer Location", "Printer Manufacturer", 
             "Current Print Job ID", "Job Start Time");
             if (count($job_results) == 0) {
-                printTable($printer_results, $cols[0:2]);
-            } else {printTable($printer_results_full, array_slice($cols, 0, 3);}
+                printTable($printer_results, array_slice($cols, 0, 2));
+            } else {
+                printTable($printer_results_full, array_slice($cols, 0, 3));
+            }
 
             //Materials Table
             $results = $conn->query($sql_material);

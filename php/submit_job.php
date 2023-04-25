@@ -106,20 +106,6 @@
         </div>
 
         <?php
-            // // Receive the submitted form
-            // if (isset($_POST["designer"])) {
-            //     $designer = $_POST["designer"];
-            //     printf("Designer is: $designer");
-            // }
-            // if (isset($_POST["material"])) {
-            //     $mat = $_POST["material"];
-            //     printf("Material is: $mat");
-            // }
-            // if (isset($_POST["printer"])) {
-            //     $printer = $_POST["printer"];
-            //     printf("Printer is: $mat");
-            // }
-
             $conn->close();
         ?>
 

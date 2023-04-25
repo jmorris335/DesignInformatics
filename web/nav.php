@@ -12,6 +12,7 @@ function printTopNav(string $pagetitle = null) {
                 </div>
             </div>
             <a href="http://localhost:8888/DesignInformatics/php/Rhyans_Forms/Change_db_Entity.php">Manage Database</a>
+            <a href="http://localhost:8888/DesignInformatics/php/sensor_data.php">Data Overview</a>
             <div class="dropdown">
                 <button class=dropbtn> Tools
                     <i class="fa fa-caret-down"></i>

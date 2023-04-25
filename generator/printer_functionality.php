@@ -131,7 +131,10 @@ function isPrinting(string $printer_id, mysqli $conn) {
     $current_jobs = getCurrentPrintJob($printer_id, $conn);
     // printf("<br>Jobs for Printer $printer_id".var_dump($current_jobs));
     if (count($current_jobs) == 0) {return False;}
-    else {return True;}
+    else {
+        generateSensorData($printer_id, $conn);
+        return True;
+    }
 }
 
 /**
@@ -140,5 +143,53 @@ function isPrinting(string $printer_id, mysqli $conn) {
  */
 function getRandomTimeDuration(): DateInterval {
     return DateInterval::createFromDateString("3 minutes");
+}
+
+/**
+ * Makes a new data point for each sensor for the given printer
+ */
+function generateSensorData(int $printer_id, mysqli $conn) {
+    $query = "SELECT Sensor.sensor_ID, Sensor.sensor_name, Sensor.part_ID
+    FROM Sensor, Part 
+    WHERE Sensor.part_ID = Part.part_ID
+    AND Part.printer_ID = $printer_id;";
+    $results = $conn->query($query);
+    $sensors = $results->fetch_all(MYSQLI_BOTH);
+    foreach ($sensors as $sensor) {
+        newSensorData($sensor, $conn);
+    }
+}
+
+/**
+ * Adds a new piece of data at the NOW timestamp
+ */
+function newSensorData(array $sensor, mysqli $conn) {
+    $now_datetime = new DateTimeImmutable("now", new DateTimeZone("America/New_York"));
+    $now_string = $now_datetime->format("Y-m-d H:i:s");
+    $unit = findUnit($sensor['sensor_name']);
+    $data_name = $sensor['sensor_name']."(".$unit.")";
+    $value = (rand(0, 100)) * 1.4521;
+    $id = $sensor['sensor_ID'];
+    
+    $cols = array("timestamp", "data_name", "value", "sensor_ID", "unit");
+    $vals = array($now_string, $data_name, $value, $id, $unit);
+    $query = makeInsertQuery("Sensor_Data", $cols, array($vals));
+    $conn->query($query);
+}
+
+function findUnit(string $sensor_name) {
+    $name = strtolower($sensor_name);
+    if (str_contains($name, "temperature") || str_contains($name, "thermometer")) {
+        return "degF";
+    }
+    elseif (str_contains($name, "width") || str_contains($name, "length") ||
+            str_contains($name, "height") || str_contains($name, "thickness") || str_contains($name, "position")) {
+        return "mm";
+    }
+    elseif (str_contains($name, "tachometer")) {return "deg";}
+    elseif (str_contains($name, "ammeter")) {return "amps";}
+    elseif (str_contains($name, "accelerometer")) {return "mm/s2";}
+    elseif (str_contains($name, "level")) {return "percent";}
+    else {return "string";}
 }
 ?>
