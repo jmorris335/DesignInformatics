@@ -32,6 +32,7 @@
                                 <option value="" disabled selected>Select...</option>
                                 <option value="Printer">Printer</option> 
                                 <option value="Part">Printer Part</option>
+                                <option value="Parameter">Parameters</option>
                                 <option value="Part_Parameters">Part Parameters</option>
                                 <option value="Material">Printer Material</option>
                                 <option value="Material_Loaded_In_Printer">Loaded Materials</option> 

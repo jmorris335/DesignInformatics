@@ -441,7 +441,7 @@ function addPrintJobs(array $printers, array $mats, mysqli $conn) {
         $des = rand(1, 5);
         $cura = rand(1, 5);
         $prep = rand(1, 5);
-        $succeed = ($note == 'Print Succeeded') ? 1 : 0;
+        $succeed = ($note == 'Print succeeded') ? 1 : 0;
         $printer = $printers[rand(0, count($printers)-1)];
         $mat = $mats[rand(0, count($mats)-1)];
         array_push($values, array($model, $gcode, $des, $cura, $prep, $printer->getID(), $mat->getID(),
