@@ -90,9 +90,8 @@
             $cols = array("Model", "Printer Location", "Printer Manufacturer", 
             "Current Print Job ID", "Job Start Time");
             if (count($job_results) == 0) {
-                $printer_results_full = $printer_results;
-            }
-            printTable($printer_results_full, $cols);
+                printTable($printer_results, $cols[0:2]);
+            } else {printTable($printer_results_full, array_slice($cols, 0, 3);}
 
             //Materials Table
             $results = $conn->query($sql_material);
