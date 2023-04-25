@@ -43,8 +43,11 @@ class Part {
         $this->printer_id = $new_id;
     }
 
-    function addParam(Parameter $new_param) {
-        array_push($this->params, $new_param);
+    /**
+     * @param array $new_param_info = pair where first term is a Parameter and second is a value
+     */
+    function addParam(array $new_param_info) {
+        array_push($this->params, $new_param_info);
     }
 
     function addSensor(Sensor $new_sensor) {

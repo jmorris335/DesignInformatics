@@ -29,7 +29,7 @@ class PrintJob {
         else {$this->curator_id = $curator_id;}                    
         $this->job_succeeded = $job_succeeded;
         $this->in_queue = $in_queue;
-        if ($print_volume == 0) {$this->print_volume = rand(0, 3000) * 1.34;}
+        if ($print_volume == 0) {$this->print_volume = rand(1, 3000) * 1.34;}
         $this->print_volume = $print_volume;
     }
 
