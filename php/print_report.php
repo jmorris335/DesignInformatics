@@ -18,6 +18,7 @@
             $conn->query("USE 3DPrinterDT;");
 
             if (isset($_POST['success'])) {$posted = true; printf("<h3> <b style='color:green;'>Success</b></h3>");}
+            else {$posted = false;}
 
 
 
@@ -27,8 +28,8 @@
                 else {$print_status = 0;}
                 $comments = $_POST['comments'];
                 if (empty($comments)) {$comments = 'null';}
-                $maint = $_POST['maint'] == 'maint';
-                $queue = $_Post['queue'] == 'queue';
+                $maint = ! empty($_Post['maint']);
+                $maint = ! empty($_Post['queue']);
                 $date = new DateTime("now", new DateTimeZone("America/New_York"));
                 $date = $date->format("Y-m-d H:i:s");
 
