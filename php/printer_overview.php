@@ -64,8 +64,7 @@
                 $queue_length = count(getPrinterQueue($id, $conn));
 
                 printf("\n\t<td>\n\t<h3>$name</h3>
-                        \t<img src=\"$image\">
-                        \tLocation: $location\n\t<br>");
+                        \t<img src=\"$image\" style=\"height:200px;\"><br>");
                 $color = "orange";
                 if ($status === "ERROR") {$color = "red";}
                 elseif ($status === "AVAILABLE") {$color = "green";}
