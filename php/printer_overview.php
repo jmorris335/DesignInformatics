@@ -57,8 +57,8 @@
                 $location = $row["location"];
                 $name = $row["printer_name"];
                 $media = array("../web/media/f123-fdm-3d-printer.jpeg", 
-                "../web/media/f900-3d-printer.png",
-                "../web/media/f770-3d-printer.png");
+                                "../web/media/f900-3d-printer.png",
+                                "../web/media/f770-3d-printer.png");
                 $image = $media[$media_index % count($media)];
                 $status = getPrinterStatus($id, $conn);
                 $queue_length = count(getPrinterQueue($id, $conn));
