@@ -18,6 +18,8 @@
             $conn = connectToServer(to_print: false);
             $conn->query("USE 3DPrinterDT;");
 
+            
+
             $printers = getTable("Printer", $conn);
 
             if (isset($_POST['printer_ID'])) {
@@ -26,6 +28,11 @@
                 printf("<h2>".$printer_name."</h2>");
             }
             else {$printer = 1; $printer_name = "Printer Not Found";printf("<h3>".$printer_name."</h3>");}
+
+            if (!empty($_POST['Set_Status'])) {
+                setPrinterStatus($printer, $_POST['Set_Status'], $conn);
+            }
+
             
 
             $sql_job = "SELECT print_job.job_ID, print_job.print_start_time
@@ -113,6 +120,38 @@
                 <input type="submit" value="Maintenance Log">
             </form>
         </div>
+<br>
+<br>
+<br>
+<br>
+
+        <div class='form-container'>
+            <form method = 'post' action='' target='_self'>
+                <div class='row'>
+                    <div class='col-25'>
+                        <label for='Set_Status'>Set Printer Status</label>
+                    </div>
+                    <div class='col-75'>
+                        <select id='Set_Status' name='Set Status'>
+                            <option value='' disabled selected>Select...</option>
+                            <option value='AVAILABLE'>AVAILABLE</option>
+                            <option value='BUSY'>BUSY</option>
+                            <option value='NEEDS SERVICE'>NEEDS SERVICE</option>
+                            <option value='NOT CONNECTED'>NOT CONNECTED</option>
+                            <option value='ERROR'>ERROR</option>
+                        </select>
+                <input type="hidden" name="printer_ID" id="printer_ID" value="<?php printf($printer) ?>">
+                <input type="hidden" name="printer_name" id="printer_name" value="<?php printf($printer_name) ?>">
+                    </div>
+                </div>
+                <div class='submit-row'>
+                    <input type='submit' value='Submit'>
+                    <input type='reset' value='Reset'>
+                </div>
+            </form>
+        </div>
+
+
 
         <br>
         <br>
