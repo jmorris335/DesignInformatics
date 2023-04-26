@@ -44,7 +44,7 @@
                 FROM print_job 
                 WHERE job_ID = ".$job_ID.";";
                 $results = $conn-> query($get_printer);
-                $printer_ID = $results->fetch_all(MYSQLI_BOTH);
+                $printer_ID = $results->fetch_all(MYSQLI_BOTH)[0][0];
 
                 if ($maint) {
                     setPrinterStatus($printer_ID, "NEEDS SERVICE", $conn);
