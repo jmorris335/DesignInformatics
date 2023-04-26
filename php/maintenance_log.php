@@ -27,7 +27,7 @@
 
             $query_log = "SELECT maintenance_log.timestamp, part.part_name, employee.first_name, employee.last_name, maintenance_log.notes
             FROM maintenance_log, employee, part, part_has_maintenance_log
-            WHERE part.printer_ID = ".$printer." 
+            WHERE part.printer_ID = $printer
             AND part.part_ID = part_has_maintenance_log.part_ID 
             AND part_has_maintenance_log.mlog_ID = maintenance_log.mlog_ID 
             AND maintenance_log.employee_ID = employee.employee_ID

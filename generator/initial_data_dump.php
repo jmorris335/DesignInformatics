@@ -1,7 +1,22 @@
+<!DOCTYPE html>
 <html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Initialize DBs</title>
+        <link rel="stylesheet" href="../web/css/styles.css">
+    </head>
     <body>
-        <h1> Initial Data Dump</h1>
+        <?php include "../web/nav.php"; printTopNav(); ?>
+        <h1> Initialize Databases</h1>
         <p> Note that each time you click the button the data will be readded to the database. Hopefully this page should only be displayed once! </p>
+        <p> You will likely want to empty the DB before running (from PHPMyAdmin) </p>
+
+        <form method="post" action="" target="_self">
+            <input type="hidden" name="commit" id="commit" value="commit">
+            <input type="submit" value="Dump new data to DB">
+        </form>
     </body>
 </html>
 
@@ -20,7 +35,7 @@ include_once ("classes/material.php");
 include_once ("classes/role.php");
 include_once ("classes/printer_state.php");
 
-if(isset($_POST['commit'])) {
+if(!empty($_POST['commit'])) {
     makeInstances();
 }
 

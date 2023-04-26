@@ -12,6 +12,7 @@ function printTopNav(string $pagetitle = null) {
                 </button>
                 <div class="dropdown-content">
                     <a href="http://localhost:8888/DesignInformatics/db/">Sync DBs</a>
+                    <a href="http://localhost:8888/DesignInformatics/generator/initial_data_dump.php/">Reload DBs</a>
                     <a href="http://localhost:8888/phpMyAdmin5/">phpMyAdmin</a>
                     <a href="http://localhost:8888/DesignInformatics/php/demos">Class Demos</a>
                 </div>
