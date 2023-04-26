@@ -28,9 +28,11 @@
                 else {$print_status = 0;}
                 $comments = $_POST['comments'];
                 //if (empty($comments)) {$comments = 'null';}
-                $maint = ! empty($_POST['maint']);
+                $maint = !empty($_POST['maint']);
+                
                 $date = new DateTime("now", new DateTimeZone("America/New_York"));
                 $date = $date->format("Y-m-d H:i:s");
+                printf(var_dump($_POST));
 
                 $job_update = "UPDATE print_job
                 SET job_succeeded = ".$print_status.", 

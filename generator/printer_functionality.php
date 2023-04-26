@@ -61,7 +61,9 @@ function processQueue(mysqli $conn) {
  */
 function updateStatus($printer_id, $conn) {
     $status = "ERROR";
+    $curr_status = getPrinterStatus($printer_id, $conn);
     if (isPrinting($printer_id, $conn)) {$status = "BUSY";}
+    elseif ($curr_status == "NEEDS SERVICE" || $curr_status == "NOT CONNECTED") {return;}
     else {$status = "AVAILABLE";}
     setPrinterStatus($printer_id, $status, $conn);
     // printf("<br>Set Printer $printer_id Status to $status");
