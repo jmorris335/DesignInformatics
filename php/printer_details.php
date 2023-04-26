@@ -79,9 +79,9 @@
             $cols = array("Model", "Printer Location", "Printer Manufacturer", 
             "Current Print Job ID", "Job Start Time");
             if (count($job_results) == 0) {
-                printTable($printer_results, array_slice($cols, 0, 2));
+                printTable($printer_results, array_slice($cols, 0, 3));
             } else {
-                printTable($printer_results_full, array_slice($cols, 0, 3));
+                printTable($printer_results_full, $cols);
             }
 
             //Materials Table
