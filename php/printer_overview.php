@@ -46,20 +46,26 @@
             printf("\n<table>");
             for ($i = 0; $i < count($printers); $i++) {
                 if ($i % 2 === 0) {printf("<tr>");}
-                printPrinterCell($printers[$i], $conn);
+                printPrinterCell($printers[$i], $conn, $i);
                 if ($i % 2 === 1) {printf("</tr>");}
             }            
             printf("\n</table>");
 
-            function printPrinterCell(array $row, mysqli $conn) {
+            function printPrinterCell(array $row, mysqli $conn, int $media_index=0) {
                 $printer_name = $row["printer_name"];
                 $id = $row["printer_ID"];
                 $location = $row["location"];
-                $model = $row["model"];
+                $name = $row["printer_name"];
+                $media = array("../web/media/f123-fdm-3d-printer.jpeg", 
+                "../web/media/f900-3d-printer.png",
+                "../web/media/f770-3d-printer.png");
+                $image = $media[$media_index % count($media)];
                 $status = getPrinterStatus($id, $conn);
                 $queue_length = count(getPrinterQueue($id, $conn));
 
-                printf("\n\t<td>\n\t<h3>$model</h3>\n\tLocation: $location\n\t<br>");
+                printf("\n\t<td>\n\t<h3>$name</h3>
+                        \t<img src=\"$image\">
+                        \tLocation: $location\n\t<br>");
                 $color = "orange";
                 if ($status === "ERROR") {$color = "red";}
                 elseif ($status === "AVAILABLE") {$color = "green";}
