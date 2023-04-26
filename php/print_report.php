@@ -27,16 +27,15 @@
                 if ($_POST['print_status'] == 'Success') {$print_status = 1;} 
                 else {$print_status = 0;}
                 $comments = $_POST['comments'];
-                if (empty($comments)) {$comments = 'null';}
+                //if (empty($comments)) {$comments = 'null';}
                 $maint = ! empty($_Post['maint']);
-                $maint = ! empty($_Post['queue']);
                 $date = new DateTime("now", new DateTimeZone("America/New_York"));
                 $date = $date->format("Y-m-d H:i:s");
 
                 $job_update = "UPDATE print_job
                 SET job_succeeded = ".$print_status.", 
                 print_finish_time = \"".$date."\", 
-                print_report = ".$comments." 
+                print_report = \"".$_Post['print_status'].": ".$comments."\" 
                 WHERE job_ID = ".$job_ID.";";
                 
                 $results = $conn-> query($job_update);
@@ -49,18 +48,6 @@
 
                 if ($maint) {
                     setPrinterStatus($printer_ID, "NEEDS SERVICE", $conn);
-
-                } elseif ($queue) {
-                    $sql_queue = "UPDATE print_job
-                    SET print_start_time = \"".$date."\", 
-                    in_queue = 0
-                    WHERE in_queue = 1,
-                    print_start_time = null,
-                    print_submission_time = MIN(print_submission_time)
-                    printer_ID = ".$printer_ID."
-                    ;";
-
-                    $results = $conn-> query($sql_queue);
 
                 } else {
                     setPrinterStatus($printer_ID, "AVAILABLE", $conn);
