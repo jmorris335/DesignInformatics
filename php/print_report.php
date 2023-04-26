@@ -47,14 +47,8 @@
                 $printer_ID = $results->fetch_all(MYSQLI_BOTH);
 
                 if ($maint) {
-                    $sql_maint = "UPDATE printer_state
-                    SET is_available = false, 
-                    timestamp = \"".$date."\", 
-                    needs_sevice = true 
-                    WHERE printer_state.printer_ID = ".$printer_ID." 
-                    ;";
+                    setPrinterStatus($printer_ID, "NEEDS SERVICE", $conn);
 
-                    $results = $conn-> query($sql_maint);
                 } elseif ($queue) {
                     $sql_queue = "UPDATE print_job
                     SET print_start_time = \"".$date."\", 
@@ -68,14 +62,8 @@
                     $results = $conn-> query($sql_queue);
 
                 } else {
-                    $sql_available = "UPDATE printer_state
-                    SET is_busy = false,
-                    is_available = true,
-                    timestamp = \"".$date."\"
-                    WHERE printer_ID = ".$printer_ID."
-                    ;";
+                    setPrinterStatus($printer_ID, "AVAILABLE", $conn);
 
-                    $results = $conn-> query($sql_available);
                 }
             }
 
