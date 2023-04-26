@@ -28,14 +28,14 @@
                 else {$print_status = 0;}
                 $comments = $_POST['comments'];
                 //if (empty($comments)) {$comments = 'null';}
-                $maint = ! empty($_Post['maint']);
+                $maint = ! empty($_POST['maint']);
                 $date = new DateTime("now", new DateTimeZone("America/New_York"));
                 $date = $date->format("Y-m-d H:i:s");
 
                 $job_update = "UPDATE print_job
                 SET job_succeeded = ".$print_status.", 
                 print_finish_time = \"".$date."\", 
-                print_report = \"".$_Post['print_status'].": ".$comments."\" 
+                print_report = \"".$_POST['print_status'].": ".$comments."\" 
                 WHERE job_ID = ".$job_ID.";";
                 
                 $results = $conn-> query($job_update);
