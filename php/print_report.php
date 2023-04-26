@@ -120,10 +120,6 @@
                     <input type='checkbox' id='maint' name='maint' value='maint'>
                     <label for='maint'>Maintenance Required</label>
                 </div>
-                <div class='row'>
-                    <input type='checkbox' id='queue' name='queue' value='queue' checked>
-                    <label for='queue'>Auto-queue next print job</label>
-                </div>
                 <div class='submit-row'>
                     <input type='submit' value='Submit'>
                     <input type='reset' value='Reset'>
