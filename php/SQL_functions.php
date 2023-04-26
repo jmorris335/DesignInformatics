@@ -57,19 +57,19 @@ function makeInsertQuery(string $table_name, array $col_set, array $values_set) 
 function makeUpdateQuery(string $table_name, array $set_columns, array $set_values, array $where_columns, array $where_values) {
     $set_str = "";
     for ($i = 0; $i < min(array(count($set_columns), count($set_values))); $i++) {
-        $set_str = $set_str.$set_columns[$i]." = ".$set_values[$i];
+        $set_str = $set_str.$set_columns[$i]." = \"".$set_values[$i]."\"";
         if ($i != count($set_columns) - 1) {
-            $set_str = $set_str." AND ";
+            $set_str = $set_str.", ";
         }
     }
     $where_str = "";
     for ($i = 0; $i < min(array(count($where_columns), count($where_values))); $i++) {
-        $set_str = $set_str.$where_columns[$i]." = ".$where_values[$i];
+        $where_str = $where_str.$where_columns[$i]." = \"".$where_values[$i]."\"";
         if ($i != count($where_columns) - 1) {
-            $set_str = $set_str." AND ";
+            $where_str = $where_str." AND ";
         }
     }
-    return "UPDATE $table_name SET $set_str WHERE $where_str";
+    return "UPDATE $table_name SET $set_str WHERE $where_str;";
 }
 
 /**
@@ -108,6 +108,23 @@ function getColumnLabels(string $table_name, mysqli $conn, string $database_name
 }
 
 /**
+ * Returns the data type for each column in the table
+ * 
+ * @param string $table_name The name of the table in the database
+ * @param mysqli $conn Connection to the server
+ * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
+ * @return array A 2D array, where the key for each field is the column name, and the value is the datatype as a string
+ */
+function getDataTypes(string $table_name, mysqli $conn, string $database_name= "3DPrinterDT") {
+    $query = "SELECT column_name,data_type 
+              FROM information_schema.columns 
+              WHERE table_schema = '$database_name' 
+              AND table_name = '$table_name';";
+    $results = $conn->query($query);
+    return $results->fetch_all(MYSQLI_BOTH);
+}
+
+/**
  * Returns an array representing the inputted table
  * 
  * @param string $table_name The name of the table in the database to select
@@ -126,10 +143,50 @@ function getTable(string $table_name, mysqli $conn, string $database_name= "3DPr
     return $results->fetch_all(MYSQLI_BOTH);
 }
 
-function getPrinterStatus(int $printer_id, $conn) {
+/**
+ * Returns a filtered array representing the desired values
+ * 
+ * @param string $table_name The name of the table in the database to select
+ * @param string $value_name The name of the value to retrieve from the table
+ * @param string $filter_name The name of the value to filter by
+ * @param string $filter_value Value of the filter
+ * @param mysqli $conn Connection to the server
+ * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
+ * @return array An 2D array, where each item represents a row in the table, and each field is called by the column names
+ */ 
+function getValues(string $table_name, string $value_name, string $filter_name, string $filter_value,
+                  mysqli $conn, string $database_name= "3DPrinterDT") {
+    $query = "SELECT $value_name FROM $database_name.$table_name
+              WHERE $table_name.$filter_name = \"$filter_value\";";
+    $results = $conn->query($query);
+    return $results->fetch_all(MYSQLI_BOTH);
+}
+
+/**
+ * Returns a list of all foreign keys composing the specified table
+ * 
+ * @param string $table_name The name of the table in the database to search within
+ * @param mysqli $conn Connection to the server
+ * @param string $database_name = "3DPrinterDT", the name of the database where the table is stored
+ * @return array An 2D array, where each row is a foreign key with column labels:
+ *      - COLUMN_NAME: Name of the column in the selected table referencing the foreign key
+ *      - REFERENCED_TABLE_NAME: Name of the table holding the foreign key
+ *      - REFERENCED_COLUMN_NAME: Name of the column in the foreign key table
+ */
+function getForeignKeysInTable(string $table_name, mysqli $conn, string $database="3DPrinterDT") {
+    $query = "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+              FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+              WHERE REFERENCED_TABLE_SCHEMA = '3DPrinterDT' 
+              AND TABLE_NAME = '$table_name';";
+    $results = $conn->query($query);
+    return $results->fetch_all(MYSQLI_BOTH);
+}
+
+function getPrinterStatus(int $printer_id, mysqli $conn) {
     $query = "SELECT is_connected, is_busy, is_available, needs_service, has_error
         FROM 3DPrinterDT.Printer_State
-        WHERE timestamp = (
+        WHERE Printer_State.printer_ID = $printer_id
+        AND timestamp = (
             SELECT max(timestamp)
             FROM 3DPrinterDT.Printer_State
             WHERE printer_ID = $printer_id);";
@@ -151,6 +208,57 @@ function getPrinterStatus(int $printer_id, $conn) {
     else {
         return "ERROR";
     }
+}
+
+/**
+ * Sets the printer status
+ * 
+ * @param int $printer_id PK of printer to update status for
+ * @param string $new_status String with one of the following values:
+ *      - "NOT CONNECTED": Printer is not reachable
+ *      - "AVAILABLE": Printer is available for printing
+ *      - "BUSY": Printer is working properly but not available for printing
+ *      - "NEEDS SERVICE": Printer is not working properly and needs maintenance
+ *      - "ERROR": Default state, where there is some error preventing proper status
+ * @param mysqli $conn Connection to the db
+ */
+function setPrinterStatus(int $printer_id, string $new_status, mysqli $conn) {
+    $has_error = 0;
+    $is_connected = 0;
+    $is_available = 0;
+    $is_busy = 0;
+    $needs_service = 0;
+    $new_status = strtolower($new_status);
+    if ($new_status != "not connected") {
+        $is_connected = 1;
+        if($new_status === "available") {
+            $is_available = 1;
+            $is_busy = 0;
+            $needs_service = 0;
+        }
+        else {
+            $is_available = 0;
+            if($new_status === "busy") {
+                $is_busy = 1;
+                $needs_service = 0;
+            }
+            else {
+                $is_busy = 0;
+                if($new_status === "needs service") {
+                    $needs_service = 1;
+                }
+                else {
+                    $has_error = 1;
+                }
+            }
+        }
+    }
+    $date = new DateTime("now", new DateTimeZone("America/New_York"));
+    $date_string = $date->format("Y-m-d H:i:s");
+    $insert_cols = array("printer_ID", "timestamp", "is_available", "is_connected", "is_busy", "needs_service", "has_error");
+    $insert_vals = array($printer_id, $date_string, $is_available, $is_connected, $is_busy, $needs_service, $has_error);
+    $query = makeInsertQuery("Printer_State", $insert_cols, array($insert_vals));
+    $conn->query($query);
 }
 
 /**
@@ -191,9 +299,8 @@ function insertEntity(array $ent_array, string $table_name, mysqli $conn) {
         }
     }
     $query = makeInsertQuery($table_name, $ent_array[0]->getNonKeyColumns(), $insert_ent);
-    // Debugging: 
-    // printf("<br>");
-    // printf("$table_name: $query");
+    // // Debugging: 
+    // printf("<br>$table_name: $query");
     $conn->query($query);
     setPK($ent_array, $table_name, $conn);
 }
@@ -215,5 +322,75 @@ function setPK(array $ent_array, string $table_name, mysqli $conn) {
         $ent->setID($curr_pk);
         $curr_pk++;
     }
+}
+
+/**
+ * Returns every job currently listed as in the queue of the printer
+ * @param string $printer_id The pk of the printer
+ * @param mysqli $conn connection to the mysql server
+ * @return array 2D array with each job and all parameters
+ */
+function getPrinterQueue(string $printer_ID, mysqli $conn) {
+    $query = "SELECT *
+              FROM Print_Job
+              WHERE Print_Job.printer_ID = $printer_ID
+              AND Print_Job.in_queue = 1
+              ORDER BY Print_Job.submission_time DESC;";
+    $results = $conn->query($query);
+    $jobs = $results->fetch_all(MYSQLI_BOTH);
+    return $jobs;
+}
+
+/**
+ * Returns all print jobs currently printing on the selected printer
+ * @param string $printer_id The pk of the printer
+ * @param mysqli $conn connection to the mysql server
+ * @return array 2D array with each job and all parameters
+ */
+function getCurrentPrintJob(string $printer_ID, mysqli $conn) {
+    $query = "SELECT * FROM Print_Job
+            WHERE Print_Job.printer_ID = $printer_ID
+            AND (Print_Job.print_start_time IS NOT NULL
+                OR Print_Job.print_start_time <> \"\")
+            AND Print_Job.in_queue = 0
+            AND Print_Job.print_start_time < now()
+            AND (Print_Job.print_finish_time IS NULL 
+                OR Print_Job.print_finish_time = \"\");";
+    $results = $conn->query($query);
+    $jobs = $results->fetch_all(MYSQLI_BOTH);
+    // printf("<br>$query<br>");
+    // printf("<br><br>Jobs for Printer $printer_ID".var_dump($jobs));
+    return $jobs;
+}
+
+/**
+ * Returns a timestamp from the DB as a properly formatted string
+ * @param string $timestamp The timestamp as read from the mysql DB
+ * @return string The formatted time
+ */
+function formatTimestamp(string $timestamp) {
+    $time = strtotime($timestamp);
+    return date("M d, Y g:i A", $time);
+}
+
+/**
+ * Returns true if the table has an autoincrementing column, such as Printer.
+ * Returns false if the table has non-incrementing column or foreign key, such as Unit or Part_Parameter
+ * 
+ * @param string $table_name Name of the table to check
+ * @param mysqli $conn Connection to the database
+ * @return bool
+ */
+function tableHasAutoIncrementingID(string $table_name, mysqli $conn) {
+    $query = "SELECT COLUMN_NAME
+              FROM INFORMATION_SCHEMA.COLUMNS
+              WHERE TABLE_NAME = '$table_name'
+              AND DATA_TYPE = 'int'
+              AND COLUMN_DEFAULT IS NULL
+              AND IS_NULLABLE = 'NO'
+              AND EXTRA like '%%auto_increment%%';";
+    $results = $conn->query($query);
+    $result = $results->fetch_all(MYSQLI_BOTH);
+    return (count($result) != 0);
 }
 ?>

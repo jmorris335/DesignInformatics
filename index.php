@@ -6,7 +6,7 @@
         <?php include "web/nav.php"; printTopNav("Main Page"); ?>
         
         <h1> Design Informatics - Spring 2023 </h1>
-        <h3> Will Hawthorne, Rhyan Morgan, John Morris Testing Again</h3>
+        <h3> Will Hawthorne, Rhyan Morgan, John Morris</h3>
 
         <p> Note, links require the localhost port to be set to 8888. See the README.md file for more information</p>
 
