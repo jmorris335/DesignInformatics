@@ -23,3 +23,12 @@ If you can come up with a better syncing method, please go ahead and implement i
 A repo on your computer is just that, on your computer. Nobody has access to it but you. When you make changes, it will only effect you until you upload them to GitHub (our Git server). You can use an IDE to do that, or a client (like GitHub Desktop), or learn the command line interface. 
 
 Note that Git saves previous versions, so its very hard to erase files and lose information (though not impossible). However, when you make changes and upload them, you're making changes to the main branch. Please be clear about what changes your making and why when you do so. The easiest way to avoid versioning conflict is to structure our project so we're never working on the same file at the same time.
+
+### Organization
+The db folder is for re-uploading the db dump file which is the database in its current state.
+The generator folder holds class versions of database entities and generates values for the attributes for random entries while debugging.
+The model folder has the database schema in .mwb form for mysql workbench and a pdf of the EER diagram.
+The php folder holds all the php files (aka the actual website). It has 2 subfolders for demos which were used for debugging certain functions and rhyans forms for writing specific add, edit, and view pages for each entity.
+The last folder (web) has folders forsetting the css style used on every page, the javascript code used on some pages, and media for holding pictures used on the printer overview page. Please keep all use of each of those types of contents to those folders. There is also a nav.php folder that sets up the navigation bar at the top.
+
+When creating a function that other pages might use, please include it in the functions.php file. If it is related to SQL queries, please include it in the SQL_functions.php file. 
