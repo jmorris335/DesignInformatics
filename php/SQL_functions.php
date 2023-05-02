@@ -24,7 +24,7 @@ function makeInsertQuery(string $table_name, array $col_set, array $values_set) 
                 $values_str .= "\"$row[$i]\"";
             }
             elseif ($row[$i] instanceof DateTimeImmutable || $row[$i] instanceof DateTime ) {
-                $date_str = $row[$i]->format("Ymd");
+                $date_str = $row[$i]->format("Y-m-d H:i:s.v");
                 $values_str .= $date_str;
             }
             else {
