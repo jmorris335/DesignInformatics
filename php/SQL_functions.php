@@ -254,11 +254,11 @@ function setPrinterStatus(int $printer_id, string $new_status, mysqli $conn) {
         }
     }
     $date = new DateTime("now", new DateTimeZone("America/New_York"));
-    $date_string = $date->format("Y-m-d H:i:s");
+    $date_string = $date->format("Y-m-d H:i:s.v");
     $insert_cols = array("printer_ID", "timestamp", "is_available", "is_connected", "is_busy", "needs_service", "has_error");
     $insert_vals = array($printer_id, $date_string, $is_available, $is_connected, $is_busy, $needs_service, $has_error);
     $query = makeInsertQuery("Printer_State", $insert_cols, array($insert_vals));
-    //printf($query);
+    // printf($query);
     $conn->query($query);
 }
 
