@@ -1,6 +1,8 @@
 # DesignInformatics
 Class project for Design Informatics at Clemson University
 
+![Image of Printers Overview page with submitted job.](./IntefaceImage.png)
+
 ## Installation Guide
 ### Download Git
 To use this you will need to first install Git on your computer. You can do so from [their website](https://git-scm.com/), or you can install a GUI client such as [GitHub Desktop](https://desktop.github.com). 
