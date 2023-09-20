@@ -33,7 +33,7 @@ function processQueue(mysqli $conn) {
     $printers = getTable("Printer", $conn);
     foreach ($printers as $printer) {
         $printer_id = $printer['printer_ID'];
-        // updateStatus($printer_id, $conn);
+        updateStatus($printer_id, $conn);
         // DEPRACATED BY JOHN MORRIS 26 APR 2023
         // if (isPrinting($printer_id, $conn)) {
         //     $jobs = getCurrentPrintJob($printer_id, $conn);
@@ -48,8 +48,8 @@ function processQueue(mysqli $conn) {
             if (count($queue) != 0) {
                 printNextJob($printer_id, $queue, $conn);
             }
+            updateStatus($printer_id, $conn);
         }
-        updateStatus($printer_id, $conn);
     }
 }
 
