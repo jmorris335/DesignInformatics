@@ -1,7 +1,7 @@
 # DesignInformatics
 Class project for Design Informatics at Clemson University
 
-![Image of Printers Overview page with submitted job.](./IntefaceImage.png)
+![Image of Printers Overview page with submitted job.](./InterfaceImage.png)
 
 ## Installation Guide
 ### Download Git
